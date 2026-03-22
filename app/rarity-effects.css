@@ -17,6 +17,13 @@
   position: relative;
   overflow: hidden;
   border-radius: var(--rarity-overlay-radius);
+  z-index: 1;
+}
+
+/* Lightbox glow on hover */
+.rarity-wrapper:hover {
+  z-index: 10;
+  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.1));
 }
 
 .rarity-wrapper::before,

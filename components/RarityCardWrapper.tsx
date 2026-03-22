@@ -119,6 +119,15 @@ export default function RarityCardWrapper({
     const el = ref.current;
     if (!el) return;
     el.style.transform = "perspective(800px) rotateX(0deg) rotateY(0deg) scale(1)";
+    el.style.boxShadow = "";
+    el.style.background = "";
+  }, []);
+
+  const handleMouseEnter = useCallback(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.boxShadow = "0 0 40px rgba(255,255,255,0.15), 0 8px 32px rgba(0,0,0,0.3)";
+    el.style.background = "radial-gradient(ellipse at center, rgba(255,255,255,0.06) 0%, transparent 70%)";
   }, []);
 
   return (
@@ -127,11 +136,13 @@ export default function RarityCardWrapper({
       data-rarity={rarity}
       className={`rarity-wrapper ${effectClass} ${detail ? "rarity-wrapper--detail" : ""} ${className}`.trim()}
       onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       style={{
-        transition: "transform 0.15s ease-out",
+        transition: "transform 0.15s ease-out, box-shadow 0.3s ease, background 0.3s ease",
         transformStyle: "preserve-3d",
         willChange: "transform",
+        borderRadius: "8px",
       }}
     >
       {children}
