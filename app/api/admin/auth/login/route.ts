@@ -24,7 +24,11 @@ export async function POST(request: Request) {
 
     const token = createToken(user.username, user.role);
 
-    logActivity("login", user.username, `${user.username} logged in (${user.role})`);
+    try {
+      logActivity("login", user.username, `${user.username} logged in (${user.role})`);
+    } catch {
+      // Activity logging may fail on read-only filesystems (e.g., Vercel)
+    }
 
     const response = NextResponse.json({
       success: true,
@@ -39,9 +43,10 @@ export async function POST(request: Request) {
     });
 
     return response;
-  } catch {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Unknown error";
     return NextResponse.json(
-      { success: false, error: "Invalid request body" },
+      { success: false, error: `Login error: ${message}` },
       { status: 400 }
     );
   }
