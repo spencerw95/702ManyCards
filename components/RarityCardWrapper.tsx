@@ -1,12 +1,12 @@
+"use client";
+
+import { useRef, useCallback } from "react";
+
 /**
  * RarityCardWrapper
- * Wraps a card image and applies the correct CSS holographic effect
- * based on the card's rarity string.
- *
- * Usage:
- *   <RarityCardWrapper rarity={item.rarity}>
- *     <Image ... />
- *   </RarityCardWrapper>
+ * Wraps a card image and applies:
+ * 1. CSS holographic effect based on rarity (on hover only)
+ * 2. Interactive 3D tilt that follows the mouse
  */
 
 interface RarityCardWrapperProps {
@@ -98,11 +98,41 @@ export default function RarityCardWrapper({
   detail = false,
 }: RarityCardWrapperProps) {
   const effectClass = getRarityClass(rarity);
+  const ref = useRef<HTMLDivElement>(null);
+  const maxTilt = detail ? 10 : 6;
+
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      const el = ref.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width; // 0-1
+      const y = (e.clientY - rect.top) / rect.height; // 0-1
+      const rotateY = (x - 0.5) * maxTilt * 2; // -maxTilt to +maxTilt
+      const rotateX = (0.5 - y) * maxTilt * 2;
+      el.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+    },
+    [maxTilt]
+  );
+
+  const handleMouseLeave = useCallback(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.transform = "perspective(800px) rotateX(0deg) rotateY(0deg) scale(1)";
+  }, []);
 
   return (
     <div
+      ref={ref}
       data-rarity={rarity}
       className={`rarity-wrapper ${effectClass} ${detail ? "rarity-wrapper--detail" : ""} ${className}`.trim()}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        transition: "transform 0.15s ease-out",
+        transformStyle: "preserve-3d",
+        willChange: "transform",
+      }}
     >
       {children}
     </div>
