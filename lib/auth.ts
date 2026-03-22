@@ -23,15 +23,22 @@ function sign(payload: string): string {
   return createHmac("sha256", getSecret()).update(payload).digest("hex");
 }
 
+// Default admin users — used as fallback when data/team.json is not accessible (e.g., Vercel serverless)
+const DEFAULT_ADMIN_USERS: AdminUser[] = [
+  { username: "spencer", password: "702cards2026", role: "owner", createdAt: "2026-03-21" },
+  { username: "admin", password: "702admin2026", role: "editor", createdAt: "2026-03-21" },
+];
+
 /**
- * Get all admin users from data/team.json.
+ * Get all admin users from data/team.json with hardcoded fallback.
  */
 export function getAdminUsers(): AdminUser[] {
   try {
     const raw = fs.readFileSync(TEAM_FILE, "utf-8");
-    return JSON.parse(raw) as AdminUser[];
+    const users = JSON.parse(raw) as AdminUser[];
+    return users.length > 0 ? users : DEFAULT_ADMIN_USERS;
   } catch {
-    return [];
+    return DEFAULT_ADMIN_USERS;
   }
 }
 
