@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { getInventoryStats, getNewArrivals, getUniqueCards, sortItems } from "@/lib/inventory";
 import RecentlyViewed from "@/components/RecentlyViewed";
+import RarityCardWrapper from "@/components/RarityCardWrapper";
 
 export const dynamic = "force-dynamic";
 
@@ -88,16 +89,18 @@ export default async function Home() {
                 href={`/cards/${item.slug}`}
                 className="group block p-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-card)] card-hover"
               >
-                <div className="aspect-[421/614] relative mb-2 rounded overflow-hidden bg-[var(--color-bg-secondary)]">
-                  <Image
-                    src={getImageUrl(item)}
-                    alt={item.cardName}
-                    fill
-                    className="object-contain"
-                    sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 20vw"
-                    unoptimized
-                  />
-                </div>
+                <RarityCardWrapper rarity={item.rarity} className="mb-2 rounded">
+                  <div className="aspect-[421/614] relative rounded overflow-hidden bg-[var(--color-bg-secondary)]">
+                    <Image
+                      src={getImageUrl(item)}
+                      alt={item.cardName}
+                      fill
+                      className="object-contain"
+                      sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 20vw"
+                      unoptimized
+                    />
+                  </div>
+                </RarityCardWrapper>
                 <h3 className="font-medium text-sm truncate group-hover:text-[var(--color-primary)] transition-colors">
                   {item.cardName}
                 </h3>
@@ -131,16 +134,18 @@ export default async function Home() {
                   href={`/cards/${item.slug}`}
                   className="group block p-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-card)] card-hover"
                 >
-                  <div className="aspect-[421/614] relative mb-2 rounded overflow-hidden bg-[var(--color-bg-secondary)]">
-                    <Image
-                      src={getImageUrl(item)}
-                      alt={item.cardName}
-                      fill
-                      className="object-contain"
-                      sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
-                      unoptimized
-                    />
-                  </div>
+                  <RarityCardWrapper rarity={item.rarity} className="mb-2 rounded">
+                    <div className="aspect-[421/614] relative rounded overflow-hidden bg-[var(--color-bg-secondary)]">
+                      <Image
+                        src={getImageUrl(item)}
+                        alt={item.cardName}
+                        fill
+                        className="object-contain"
+                        sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
+                        unoptimized
+                      />
+                    </div>
+                  </RarityCardWrapper>
                   <h3 className="font-medium text-sm truncate group-hover:text-[var(--color-primary)] transition-colors">
                     {item.cardName}
                   </h3>

@@ -13,6 +13,7 @@ import type {
   YugiohCard,
   TCGGame,
 } from "@/lib/types";
+import RarityCardWrapper from "@/components/RarityCardWrapper";
 import { SORT_LABELS, CONDITION_SHORT, CONDITION_ORDER, TCG_GAME_LABELS, TCG_GAME_LIST } from "@/lib/types";
 import { getUniqueCards, sortItems } from "@/lib/inventory";
 import { searchCards } from "@/lib/ygoprodeck";
@@ -1163,15 +1164,17 @@ function CardTile({
 
       {/* Card image */}
       <Link href={`/cards/${cardSlug}`}>
-        <div className="relative aspect-[421/614] bg-[var(--color-bg-secondary)] overflow-hidden">
-          <Image
-            src={imageUrl}
-            alt={item.cardName}
-            fill
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-        </div>
+        <RarityCardWrapper rarity={item.rarity}>
+          <div className="relative aspect-[421/614] bg-[var(--color-bg-secondary)] overflow-hidden">
+            <Image
+              src={imageUrl}
+              alt={item.cardName}
+              fill
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              className="object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          </div>
+        </RarityCardWrapper>
       </Link>
 
       {/* Card details */}

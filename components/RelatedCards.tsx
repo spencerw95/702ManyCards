@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { getAllItems, getUniqueCards } from "@/lib/inventory";
 import type { InventoryItem, TCGGame } from "@/lib/types";
+import RarityCardWrapper from "@/components/RarityCardWrapper";
 
 // ===== Image helpers (mirrors app/page.tsx pattern) =====
 
@@ -171,16 +172,18 @@ export default async function RelatedCards({
               className="group flex-shrink-0 w-[180px] sm:w-[200px] p-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-card)] card-hover"
             >
               {/* Card image */}
-              <div className="aspect-[421/614] relative mb-2 rounded overflow-hidden bg-[var(--color-bg-secondary)]">
-                <Image
-                  src={getImageUrl(item)}
-                  alt={item.cardName}
-                  fill
-                  className="object-contain"
-                  sizes="200px"
-                  unoptimized
-                />
-              </div>
+              <RarityCardWrapper rarity={item.rarity} className="mb-2 rounded">
+                <div className="aspect-[421/614] relative rounded overflow-hidden bg-[var(--color-bg-secondary)]">
+                  <Image
+                    src={getImageUrl(item)}
+                    alt={item.cardName}
+                    fill
+                    className="object-contain"
+                    sizes="200px"
+                    unoptimized
+                  />
+                </div>
+              </RarityCardWrapper>
 
               {/* Card name */}
               <h3 className="font-medium text-sm truncate group-hover:text-[var(--color-primary)] transition-colors">

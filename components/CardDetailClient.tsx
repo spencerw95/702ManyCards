@@ -70,6 +70,7 @@ import { addToCart } from "@/lib/cart";
 import { isInWishlist, toggleWishlist } from "@/lib/wishlist";
 import { addRecentlyViewed } from "@/lib/recently-viewed";
 import ImageGallery from "@/components/ImageGallery";
+import RarityCardWrapper from "@/components/RarityCardWrapper";
 import PriceAlertButton from "@/components/PriceAlertButton";
 
 // ===== Card ID Map =====
@@ -293,10 +294,12 @@ export default function CardDetailClient({ item, relatedItems }: CardDetailClien
       <div style={styles.mainGrid} data-cd-grid>
         {/* Left Column: Image + Wishlist */}
         <div style={styles.leftCol} data-cd-left>
-          <ImageGallery
-            images={[imageUrl, ...(item.images || []).filter((u) => u !== imageUrl)]}
-            alt={item.cardName}
-          />
+          <RarityCardWrapper rarity={item.rarity} detail className="rounded-xl">
+            <ImageGallery
+              images={[imageUrl, ...(item.images || []).filter((u) => u !== imageUrl)]}
+              alt={item.cardName}
+            />
+          </RarityCardWrapper>
           <button
             onClick={handleToggleWishlist}
             style={{
