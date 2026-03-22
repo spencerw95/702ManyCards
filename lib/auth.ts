@@ -26,6 +26,7 @@ function sign(payload: string): string {
 // Default admin users — used as fallback when data/team.json is not accessible (e.g., Vercel serverless)
 const DEFAULT_ADMIN_USERS: AdminUser[] = [
   { username: "spencer", password: "702cards2026", role: "owner", createdAt: "2026-03-21" },
+  { username: "Damien", password: "Admin123", role: "owner", createdAt: "2026-03-22" },
   { username: "admin", password: "702admin2026", role: "editor", createdAt: "2026-03-21" },
 ];
 

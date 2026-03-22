@@ -10,5 +10,11 @@
     "password": "702admin2026",
     "role": "editor",
     "createdAt": "2026-03-21"
+  },
+  {
+    "username": "Damien",
+    "password": "Admin123",
+    "role": "owner",
+    "createdAt": "2026-03-22"
   }
 ]
