@@ -133,7 +133,9 @@ export function searchItems(filters: Partial<SearchFilters>): InventoryItem[] {
       (item) =>
         item.cardName.toLowerCase().includes(q) ||
         item.setCode.toLowerCase().includes(q) ||
-        item.setName.toLowerCase().includes(q)
+        item.setName.toLowerCase().includes(q) ||
+        item.rarity.toLowerCase().includes(q) ||
+        item.condition.toLowerCase().includes(q)
     );
   }
 
