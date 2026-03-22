@@ -2,15 +2,17 @@ import { Suspense } from "react";
 import { getAllItems, getUniqueSetNames, getUniqueRarities, ALL_YUGIOH_RARITIES, ALL_POKEMON_RARITIES, ALL_MTG_RARITIES, getSetNamesForGame } from "@/lib/inventory";
 import SearchPageClient from "@/components/SearchPageClient";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Browse Cards | 702ManyCards",
   description: "Search and browse our full trading card inventory. Yu-Gi-Oh!, Pokemon, Magic: The Gathering, and Riftbound singles.",
 };
 
-export default function SearchPage() {
-  const allItems = getAllItems();
-  const setNames = getUniqueSetNames();
-  const inventoryRarities = getUniqueRarities();
+export default async function SearchPage() {
+  const allItems = await getAllItems();
+  const setNames = await getUniqueSetNames();
+  const inventoryRarities = await getUniqueRarities();
 
   // Build ordered rarity lists for each game: in-stock first, then out-of-stock
   const buildOrderedRarities = (masterList: string[]) => [
@@ -23,9 +25,9 @@ export default function SearchPage() {
   const mtgRarities = buildOrderedRarities(ALL_MTG_RARITIES);
 
   // Per-game set names
-  const yugiohSets = getSetNamesForGame("yugioh");
-  const pokemonSets = getSetNamesForGame("pokemon");
-  const mtgSets = getSetNamesForGame("mtg");
+  const yugiohSets = await getSetNamesForGame("yugioh");
+  const pokemonSets = await getSetNamesForGame("pokemon");
+  const mtgSets = await getSetNamesForGame("mtg");
 
   return (
     <main className="min-h-screen bg-[var(--color-bg)]">

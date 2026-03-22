@@ -14,7 +14,7 @@ import type {
   TCGGame,
 } from "@/lib/types";
 import { SORT_LABELS, CONDITION_SHORT, CONDITION_ORDER, TCG_GAME_LABELS, TCG_GAME_LIST } from "@/lib/types";
-import { searchItems, getUniqueCards, sortItems } from "@/lib/inventory";
+import { getUniqueCards, sortItems } from "@/lib/inventory";
 import { searchCards } from "@/lib/ygoprodeck";
 import { isInWishlist, toggleWishlist } from "@/lib/wishlist";
 import { addToCart } from "@/lib/cart";
@@ -268,7 +268,54 @@ export default function SearchPageClient({
 
   // ----- Filtering + Sorting (including advanced client-side filters) -----
   useEffect(() => {
-    let filtered = searchItems(filters);
+    // Client-side filtering on the server-provided initialItems
+    let filtered: InventoryItem[] = [...initialItems];
+
+    // Game filter
+    if (filters.game) {
+      filtered = filtered.filter((item) => item.game === filters.game);
+    }
+
+    // Text search
+    if (filters.query && filters.query.trim()) {
+      const q = filters.query.toLowerCase().trim();
+      filtered = filtered.filter(
+        (item) =>
+          item.cardName.toLowerCase().includes(q) ||
+          item.setCode.toLowerCase().includes(q) ||
+          item.setName.toLowerCase().includes(q) ||
+          item.rarity.toLowerCase().includes(q) ||
+          item.condition.toLowerCase().includes(q)
+      );
+    }
+
+    // Set name filter
+    if (filters.setName && filters.setName !== "") {
+      filtered = filtered.filter((item) => item.setName === filters.setName);
+    }
+
+    // Rarity filter
+    if (filters.rarity && filters.rarity.length > 0) {
+      filtered = filtered.filter((item) => filters.rarity!.includes(item.rarity));
+    }
+
+    // Condition filter
+    if (filters.condition && filters.condition.length > 0) {
+      filtered = filtered.filter((item) => filters.condition!.includes(item.condition));
+    }
+
+    // Edition filter
+    if (filters.edition && filters.edition.length > 0) {
+      filtered = filtered.filter((item) => filters.edition!.includes(item.edition));
+    }
+
+    // Price range
+    if (filters.priceMin !== undefined && filters.priceMin !== null) {
+      filtered = filtered.filter((item) => item.price >= filters.priceMin!);
+    }
+    if (filters.priceMax !== undefined && filters.priceMax !== null) {
+      filtered = filtered.filter((item) => item.price <= filters.priceMax!);
+    }
 
     // Client-side: Yu-Gi-Oh card type filter (pattern matching on card name for known Spell/Trap patterns)
     if (filters.game === "yugioh" && yugiohCardType !== "All") {
@@ -292,7 +339,7 @@ export default function SearchPageClient({
     const sorted = sortItems(filtered, sort);
     setResults(sorted);
     setDisplayCards(getUniqueCards(sorted));
-  }, [filters, sort, yugiohCardType, pokemonType, mtgColors, atkMin, atkMax, defMin, defMax]);
+  }, [filters, sort, yugiohCardType, pokemonType, mtgColors, atkMin, atkMax, defMin, defMax, initialItems]);
 
   // ----- Wishlist sync -----
   useEffect(() => {

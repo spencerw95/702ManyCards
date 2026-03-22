@@ -2,13 +2,15 @@ import { Suspense } from "react";
 import { getAllAccessories } from "@/lib/accessories";
 import AccessoriesPageClient from "./AccessoriesPageClient";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Accessories & Sealed Products | 702ManyCards",
   description: "Shop playmats, deck boxes, card sleeves, booster boxes, starter decks, tins and bundles. Yu-Gi-Oh!, Pokemon, and MTG sealed products from Konami, The Pokemon Company, and Wizards of the Coast.",
 };
 
-export default function AccessoriesPage() {
-  const allAccessories = getAllAccessories();
+export default async function AccessoriesPage() {
+  const allAccessories = await getAllAccessories();
 
   return (
     <main className="min-h-screen bg-[var(--color-bg)]">

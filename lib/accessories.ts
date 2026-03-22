@@ -1,22 +1,68 @@
 import type { AccessoryItem, AccessoryCategory } from "./types";
-import accessoriesData from "@/data/accessories.json";
+import { getServiceSupabase } from "./supabase";
+
+// JSON fallback import
+let accessoriesData: AccessoryItem[] = [];
+try {
+  accessoriesData = require("@/data/accessories.json") as AccessoryItem[];
+} catch {
+  // JSON file may not exist; that's fine — Supabase is primary
+}
+
+// ===== Supabase row -> AccessoryItem mapper =====
+
+function mapRow(row: Record<string, unknown>): AccessoryItem {
+  return {
+    id: row.id as string,
+    name: row.name as string,
+    description: (row.description as string) || "",
+    category: row.category as AccessoryCategory,
+    subcategory: (row.subcategory as string) || undefined,
+    price: Number(row.price) || 0,
+    cost: row.cost != null ? Number(row.cost) : undefined,
+    quantity: Number(row.quantity) || 0,
+    imageUrl: (row.image_url as string) || undefined,
+    images: (row.images as string[]) || undefined,
+    brand: (row.brand as string) || undefined,
+    color: (row.color as string) || undefined,
+    game: (row.game as AccessoryItem["game"]) || undefined,
+    setName: (row.set_name as string) || undefined,
+    dateAdded: row.date_added as string,
+    slug: row.slug as string,
+  };
+}
 
 /**
- * Get all accessory items.
+ * Get all accessory items from Supabase. Falls back to JSON on failure.
  */
-export function getAllAccessories(): AccessoryItem[] {
-  return accessoriesData as AccessoryItem[];
+export async function getAllAccessories(): Promise<AccessoryItem[]> {
+  try {
+    const sb = getServiceSupabase();
+    const { data, error } = await sb
+      .from("accessories")
+      .select("*")
+      .order("date_added", { ascending: false });
+    if (error) throw error;
+    if (!data || data.length === 0) {
+      if (accessoriesData.length > 0) return accessoriesData;
+      return [];
+    }
+    return data.map(mapRow);
+  } catch (e) {
+    console.error("[accessories] Supabase fetch failed, using JSON fallback:", e);
+    return accessoriesData;
+  }
 }
 
 /**
  * Search and filter accessory items.
  */
-export function searchAccessories(
+export async function searchAccessories(
   query?: string,
   category?: AccessoryCategory | null,
   subcategory?: string | null
-): AccessoryItem[] {
-  let items = getAllAccessories();
+): Promise<AccessoryItem[]> {
+  let items = await getAllAccessories();
 
   // Category filter
   if (category) {
@@ -48,16 +94,32 @@ export function searchAccessories(
 /**
  * Get a single accessory by its slug.
  */
-export function getAccessoryBySlug(slug: string): AccessoryItem | undefined {
-  return getAllAccessories().find((item) => item.slug === slug);
+export async function getAccessoryBySlug(slug: string): Promise<AccessoryItem | undefined> {
+  try {
+    const sb = getServiceSupabase();
+    const { data, error } = await sb
+      .from("accessories")
+      .select("*")
+      .eq("slug", slug)
+      .limit(1);
+    if (error) throw error;
+    if (data && data.length > 0) {
+      return mapRow(data[0]);
+    }
+  } catch (e) {
+    console.error("[accessories] getAccessoryBySlug Supabase failed:", e);
+  }
+  // Fallback
+  return accessoriesData.find((item) => item.slug === slug);
 }
 
 /**
  * Get unique brands from accessories (for potential future filter use).
  */
-export function getUniqueBrands(): string[] {
+export async function getUniqueBrands(): Promise<string[]> {
+  const items = await getAllAccessories();
   const brands = new Set(
-    getAllAccessories()
+    items
       .map((item) => item.brand)
       .filter(Boolean) as string[]
   );

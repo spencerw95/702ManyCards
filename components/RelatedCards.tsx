@@ -64,14 +64,14 @@ interface RelatedCardsProps {
   currentSlug: string;
 }
 
-function getRelatedCards(
+async function getRelatedCards(
   cardName: string,
   setName: string,
   rarity: string,
   game: TCGGame,
   currentSlug: string,
-): InventoryItem[] {
-  const allItems = getAllItems();
+): Promise<InventoryItem[]> {
+  const allItems = await getAllItems();
 
   // Deduplicate by card name so we show distinct cards, not duplicate listings
   const uniqueCards = getUniqueCards(allItems);
@@ -137,14 +137,14 @@ function rarityColor(rarity: string): string {
 
 // ===== Component =====
 
-export default function RelatedCards({
+export default async function RelatedCards({
   cardName,
   setName,
   rarity,
   game,
   currentSlug,
 }: RelatedCardsProps) {
-  const related = getRelatedCards(cardName, setName, rarity, game, currentSlug);
+  const related = await getRelatedCards(cardName, setName, rarity, game, currentSlug);
 
   if (related.length === 0) return null;
 

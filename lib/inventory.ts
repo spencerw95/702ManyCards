@@ -1,6 +1,14 @@
 import type { InventoryItem, SearchFilters, SortOption, CardCondition, TCGGame } from "./types";
 import { CONDITION_ORDER } from "./types";
-import inventoryData from "@/data/inventory.json";
+import { getServiceSupabase } from "./supabase";
+
+// JSON fallback import
+let inventoryData: InventoryItem[] = [];
+try {
+  inventoryData = require("@/data/inventory.json") as InventoryItem[];
+} catch {
+  // JSON file may not exist; that's fine — Supabase is primary
+}
 
 const RARITY_ORDER: Record<string, number> = {
   "Starlight Rare": 20,
@@ -108,18 +116,59 @@ export function getRaritiesForGame(game: TCGGame): string[] {
   }
 }
 
+// ===== Supabase row -> InventoryItem mapper =====
+
+function mapRow(row: Record<string, unknown>): InventoryItem {
+  return {
+    id: row.id as string,
+    cardName: row.card_name as string,
+    setName: row.set_name as string,
+    setCode: row.set_code as string,
+    rarity: row.rarity as string,
+    condition: (row.condition as CardCondition) || "Near Mint",
+    edition: (row.edition as InventoryItem["edition"]) || "Unlimited",
+    price: Number(row.price) || 0,
+    cost: row.cost != null ? Number(row.cost) : undefined,
+    quantity: Number(row.quantity) || 0,
+    game: (row.game as TCGGame) || "yugioh",
+    slug: row.slug as string,
+    dateAdded: row.date_added as string,
+    language: "English",
+    imageUrl: (row.image_url as string) || undefined,
+    images: (row.images as string[]) || undefined,
+  };
+}
+
+// ===== Data access functions (Supabase-first, JSON fallback) =====
+
 /**
- * Get all inventory items.
+ * Get all inventory items from Supabase. Falls back to JSON on failure.
  */
-export function getAllItems(): InventoryItem[] {
-  return inventoryData as InventoryItem[];
+export async function getAllItems(): Promise<InventoryItem[]> {
+  try {
+    const sb = getServiceSupabase();
+    const { data, error } = await sb
+      .from("inventory")
+      .select("*")
+      .order("date_added", { ascending: false });
+    if (error) throw error;
+    if (!data || data.length === 0) {
+      // If Supabase returns empty, try JSON fallback
+      if (inventoryData.length > 0) return inventoryData;
+      return [];
+    }
+    return data.map(mapRow);
+  } catch (e) {
+    console.error("[inventory] Supabase fetch failed, using JSON fallback:", e);
+    return inventoryData;
+  }
 }
 
 /**
  * Search and filter inventory items.
  */
-export function searchItems(filters: Partial<SearchFilters>): InventoryItem[] {
-  let items = getAllItems();
+export async function searchItems(filters: Partial<SearchFilters>): Promise<InventoryItem[]> {
+  let items = await getAllItems();
 
   // Game filter
   if (filters.game) {
@@ -149,8 +198,6 @@ export function searchItems(filters: Partial<SearchFilters>): InventoryItem[] {
     items = items.filter((item) => filters.rarity!.includes(item.rarity));
   }
 
-  // Card type filter (requires YGOPRODeck data, so we skip here — handled at component level)
-
   // Condition filter
   if (filters.condition && filters.condition.length > 0) {
     items = items.filter((item) => filters.condition!.includes(item.condition));
@@ -175,8 +222,26 @@ export function searchItems(filters: Partial<SearchFilters>): InventoryItem[] {
 /**
  * Get all listings for a specific card name.
  */
-export function getItemsByCardName(cardName: string): InventoryItem[] {
-  return getAllItems()
+export async function getItemsByCardName(cardName: string): Promise<InventoryItem[]> {
+  try {
+    const sb = getServiceSupabase();
+    const { data, error } = await sb
+      .from("inventory")
+      .select("*")
+      .ilike("card_name", cardName);
+    if (error) throw error;
+    if (data && data.length > 0) {
+      return data.map(mapRow).sort((a, b) => {
+        const condA = CONDITION_ORDER.indexOf(a.condition as CardCondition);
+        const condB = CONDITION_ORDER.indexOf(b.condition as CardCondition);
+        return condA - condB;
+      });
+    }
+  } catch (e) {
+    console.error("[inventory] getItemsByCardName Supabase failed:", e);
+  }
+  // Fallback
+  return inventoryData
     .filter((item) => item.cardName.toLowerCase() === cardName.toLowerCase())
     .sort((a, b) => {
       const condA = CONDITION_ORDER.indexOf(a.condition as CardCondition);
@@ -188,13 +253,29 @@ export function getItemsByCardName(cardName: string): InventoryItem[] {
 /**
  * Get a single item by its slug.
  */
-export function getItemBySlug(slug: string): InventoryItem | undefined {
-  return getAllItems().find((item) => item.slug === slug);
+export async function getItemBySlug(slug: string): Promise<InventoryItem | undefined> {
+  try {
+    const sb = getServiceSupabase();
+    const { data, error } = await sb
+      .from("inventory")
+      .select("*")
+      .eq("slug", slug)
+      .limit(1);
+    if (error) throw error;
+    if (data && data.length > 0) {
+      return mapRow(data[0]);
+    }
+  } catch (e) {
+    console.error("[inventory] getItemBySlug Supabase failed:", e);
+  }
+  // Fallback
+  return inventoryData.find((item) => item.slug === slug);
 }
 
 /**
  * Get unique card entries (deduplicated by card name only) for grid display.
  * Returns one entry per card name with the lowest price and total quantity across all printings.
+ * This is pure client-side logic — works on already-fetched data.
  */
 export function getUniqueCards(items: InventoryItem[]): InventoryItem[] {
   const cardMap = new Map<string, InventoryItem & { totalQuantity: number; listingCount: number }>();
@@ -220,15 +301,16 @@ export function getUniqueCards(items: InventoryItem[]): InventoryItem[] {
 /**
  * Get the total number of listings for a specific card name.
  */
-export function getListingCountForCard(cardName: string): number {
-  return getAllItems().filter((item) => item.cardName === cardName).length;
+export async function getListingCountForCard(cardName: string): Promise<number> {
+  const items = await getItemsByCardName(cardName);
+  return items.length;
 }
 
 /**
  * Get price range for a card name (min and max across all listings).
  */
-export function getPriceRangeForCard(cardName: string): { min: number; max: number } {
-  const items = getAllItems().filter((item) => item.cardName === cardName);
+export async function getPriceRangeForCard(cardName: string): Promise<{ min: number; max: number }> {
+  const items = await getItemsByCardName(cardName);
   if (items.length === 0) return { min: 0, max: 0 };
   const prices = items.map((i) => i.price);
   return { min: Math.min(...prices), max: Math.max(...prices) };
@@ -237,14 +319,29 @@ export function getPriceRangeForCard(cardName: string): { min: number; max: numb
 /**
  * Get items added in the last N days.
  */
-export function getNewArrivals(days: number = 7): InventoryItem[] {
+export async function getNewArrivals(days: number = 7): Promise<InventoryItem[]> {
+  try {
+    const sb = getServiceSupabase();
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - days);
+    const { data, error } = await sb
+      .from("inventory")
+      .select("*")
+      .gte("date_added", cutoff.toISOString())
+      .order("date_added", { ascending: false });
+    if (error) throw error;
+    if (data) return data.map(mapRow);
+  } catch (e) {
+    console.error("[inventory] getNewArrivals Supabase failed:", e);
+  }
+  // Fallback
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - days);
-  return getAllItems().filter((item) => new Date(item.dateAdded) >= cutoff);
+  return inventoryData.filter((item) => new Date(item.dateAdded) >= cutoff);
 }
 
 /**
- * Sort inventory items.
+ * Sort inventory items. Pure client-side logic.
  */
 export function sortItems(items: InventoryItem[], sortBy: SortOption): InventoryItem[] {
   const sorted = [...items];
@@ -274,17 +371,19 @@ export function sortItems(items: InventoryItem[], sortBy: SortOption): Inventory
 /**
  * Get unique set names from inventory.
  */
-export function getUniqueSetNames(): string[] {
-  const sets = new Set(getAllItems().map((item) => item.setName));
+export async function getUniqueSetNames(): Promise<string[]> {
+  const items = await getAllItems();
+  const sets = new Set(items.map((item) => item.setName));
   return Array.from(sets).sort();
 }
 
 /**
  * Get unique set names filtered by game.
  */
-export function getSetNamesForGame(game: TCGGame): string[] {
+export async function getSetNamesForGame(game: TCGGame): Promise<string[]> {
+  const items = await getAllItems();
   const sets = new Set(
-    getAllItems()
+    items
       .filter((item) => item.game === game)
       .map((item) => item.setName)
   );
@@ -294,8 +393,9 @@ export function getSetNamesForGame(game: TCGGame): string[] {
 /**
  * Get unique rarities from inventory.
  */
-export function getUniqueRarities(): string[] {
-  const rarities = new Set(getAllItems().map((item) => item.rarity));
+export async function getUniqueRarities(): Promise<string[]> {
+  const items = await getAllItems();
+  const rarities = new Set(items.map((item) => item.rarity));
   return Array.from(rarities).sort(
     (a, b) => (RARITY_ORDER[b] || 0) - (RARITY_ORDER[a] || 0)
   );
@@ -304,8 +404,27 @@ export function getUniqueRarities(): string[] {
 /**
  * Get total card count and total unique cards.
  */
-export function getInventoryStats(): { totalListings: number; uniqueCards: number; totalSets: number } {
-  const items = getAllItems();
+export async function getInventoryStats(): Promise<{ totalListings: number; uniqueCards: number; totalSets: number }> {
+  try {
+    const sb = getServiceSupabase();
+    const { data, error } = await sb
+      .from("inventory")
+      .select("card_name, quantity, set_name");
+    if (error) throw error;
+    if (data && data.length > 0) {
+      const uniqueNames = new Set(data.map((i: Record<string, unknown>) => i.card_name as string));
+      const uniqueSets = new Set(data.map((i: Record<string, unknown>) => i.set_name as string));
+      return {
+        totalListings: data.reduce((sum: number, i: Record<string, unknown>) => sum + (Number(i.quantity) || 0), 0),
+        uniqueCards: uniqueNames.size,
+        totalSets: uniqueSets.size,
+      };
+    }
+  } catch (e) {
+    console.error("[inventory] getInventoryStats Supabase failed:", e);
+  }
+  // Fallback
+  const items = inventoryData;
   const uniqueNames = new Set(items.map((i) => i.cardName));
   const uniqueSets = new Set(items.map((i) => i.setName));
   return {

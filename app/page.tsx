@@ -3,10 +3,14 @@ import Image from "next/image";
 import { getInventoryStats, getNewArrivals, getUniqueCards, sortItems } from "@/lib/inventory";
 import RecentlyViewed from "@/components/RecentlyViewed";
 
-export default function Home() {
-  const stats = getInventoryStats();
-  const newArrivals = getUniqueCards(getNewArrivals(7));
-  const featured = getUniqueCards(sortItems(getNewArrivals(30), "price-desc")).slice(0, 8);
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const stats = await getInventoryStats();
+  const allNewArrivals = await getNewArrivals(7);
+  const newArrivals = getUniqueCards(allNewArrivals);
+  const allNewArrivals30 = await getNewArrivals(30);
+  const featured = getUniqueCards(sortItems(allNewArrivals30, "price-desc")).slice(0, 8);
 
   return (
     <div>

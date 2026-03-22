@@ -4,13 +4,15 @@ import { getAllAccessories, getAccessoryBySlug } from "@/lib/accessories";
 import AccessoryDetailClient from "./AccessoryDetailClient";
 import ReviewSection from "@/components/ReviewSection";
 
+export const dynamic = "force-dynamic";
+
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const item = getAccessoryBySlug(slug);
+  const item = await getAccessoryBySlug(slug);
 
   if (!item) {
     return { title: "Product Not Found | 702ManyCards" };
@@ -23,20 +25,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export async function generateStaticParams() {
-  const items = getAllAccessories();
-  return items.map((item) => ({ slug: item.slug }));
+  // With force-dynamic, return empty to avoid build-time Supabase calls.
+  return [];
 }
 
 export default async function AccessoryDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const item = getAccessoryBySlug(slug);
+  const item = await getAccessoryBySlug(slug);
 
   if (!item) {
     notFound();
   }
 
   // Get related items in same category
-  const related = getAllAccessories()
+  const allAccessories = await getAllAccessories();
+  const related = allAccessories
     .filter((i) => i.category === item.category && i.slug !== item.slug)
     .slice(0, 4);
 

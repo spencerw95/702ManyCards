@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import type { AccessoryItem, AccessoryCategory } from "@/lib/types";
 import { ACCESSORY_CATEGORY_LABELS, ACCESSORY_GAME_LABELS } from "@/lib/types";
-import { searchAccessories } from "@/lib/accessories";
+// Client-side filtering (searchAccessories is now async/server-only)
 import { addToCart } from "@/lib/cart";
 
 type TabValue = "all" | AccessoryCategory;
@@ -132,8 +132,35 @@ export default function AccessoriesPageClient({ initialItems }: Props) {
   const filteredItems = useMemo(() => {
     const category = activeTab === "all" ? null : activeTab;
     const sub = activeTab === "card-sleeves" ? sleeveSubcategory : null;
-    return searchAccessories(searchQuery, category as AccessoryCategory | null, sub);
-  }, [activeTab, sleeveSubcategory, searchQuery]);
+    // Client-side filtering on server-provided initialItems
+    let items = [...initialItems];
+
+    // Category filter
+    if (category) {
+      items = items.filter((item) => item.category === (category as AccessoryCategory));
+    }
+
+    // Subcategory filter
+    if (sub) {
+      items = items.filter((item) => item.subcategory === sub);
+    }
+
+    // Text search
+    if (searchQuery && searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      items = items.filter(
+        (item) =>
+          item.name.toLowerCase().includes(q) ||
+          item.description.toLowerCase().includes(q) ||
+          (item.brand && item.brand.toLowerCase().includes(q)) ||
+          (item.color && item.color.toLowerCase().includes(q)) ||
+          (item.setName && item.setName.toLowerCase().includes(q)) ||
+          (item.game && item.game.toLowerCase().includes(q))
+      );
+    }
+
+    return items;
+  }, [activeTab, sleeveSubcategory, searchQuery, initialItems]);
 
   const handleAddToCart = (item: AccessoryItem) => {
     addToCart({
