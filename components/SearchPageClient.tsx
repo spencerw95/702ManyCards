@@ -194,7 +194,7 @@ export default function SearchPageClient({
   });
   const [sort, setSort] = useState<SortOption>("name-asc");
   const [results, setResults] = useState<InventoryItem[]>(initialItems);
-  const [displayCards, setDisplayCards] = useState<InventoryItem[]>([]);
+  const [displayCards, setDisplayCards] = useState<InventoryItem[]>(() => getUniqueCards(sortItems(initialItems, "name-asc")));
   const [wishlistState, setWishlistState] = useState<Record<string, boolean>>({});
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
