@@ -27,8 +27,14 @@
   pointer-events: none;
   border-radius: var(--rarity-overlay-radius);
   z-index: 2;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  opacity: 0 !important;
+  transition: opacity 0.4s ease;
+}
+
+/* Only show effects on hover */
+.rarity-wrapper:hover::before,
+.rarity-wrapper:hover::after {
+  opacity: var(--rarity-shimmer-hover-opacity) !important;
 }
 
 /* Detail-page variant — more pronounced effects */
@@ -273,11 +279,12 @@
 }
 
 .rarity-ghost > * {
-  opacity: 0.88;
+  opacity: 1;
+  transition: opacity 0.4s ease;
 }
 
 .rarity-ghost:hover > * {
-  opacity: 0.92;
+  opacity: 0.88;
 }
 
 .rarity-ghost:hover::before {
