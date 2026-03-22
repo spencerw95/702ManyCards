@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, type FormEvent } from "react";
+import ImageUpload from "@/components/ImageUpload";
 import type { AccessoryItem, AccessoryCategory, AccessoryGame } from "@/lib/types";
 import {
   ACCESSORY_CATEGORY_LABELS,
@@ -304,6 +305,17 @@ export default function AccessoriesPage() {
                 </div>
               </div>
 
+              {/* Image Upload */}
+              <div>
+                <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1.5">Product Image</label>
+                <ImageUpload
+                  currentUrl={form.imageUrl || undefined}
+                  folder="accessories"
+                  onUpload={(url) => setForm((f) => ({ ...f, imageUrl: url }))}
+                  onRemove={() => setForm((f) => ({ ...f, imageUrl: "" }))}
+                />
+              </div>
+
               {/* Row 2: Name */}
               <div>
                 <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1.5">Name *</label>
@@ -418,28 +430,6 @@ export default function AccessoriesPage() {
                 </div>
               </div>
 
-              {/* Row 7: Image URL */}
-              <div>
-                <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1.5">Image URL</label>
-                <input
-                  type="url"
-                  value={form.imageUrl}
-                  onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))}
-                  className={inputClasses}
-                  placeholder="https://..."
-                />
-                {form.imageUrl && (
-                  <div className="mt-2 w-20 h-20 rounded-[var(--radius)] border border-[var(--color-border)] overflow-hidden bg-[var(--color-bg-secondary)]">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={form.imageUrl}
-                      alt="Preview"
-                      className="w-full h-full object-cover"
-                      onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                    />
-                  </div>
-                )}
-              </div>
 
               {/* Buttons */}
               <div className="flex items-center gap-3 pt-2">

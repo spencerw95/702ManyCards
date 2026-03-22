@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getAllItems, getItemsByCardName } from "@/lib/inventory";
 import CardDetailClient from "@/components/CardDetailClient";
+import ReviewSection from "@/components/ReviewSection";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -73,5 +74,10 @@ export default async function CardDetailPage({ params }: PageProps) {
   // Get ALL listings for this card name — every set, edition, condition
   const allListings = getItemsByCardName(item.cardName);
 
-  return <CardDetailClient item={item} relatedItems={allListings} />;
+  return (
+    <>
+      <CardDetailClient item={item} relatedItems={allListings} />
+      <ReviewSection productSlug={slug} productName={item.cardName} productType="card" />
+    </>
+  );
 }

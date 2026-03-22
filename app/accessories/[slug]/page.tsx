@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getAllAccessories, getAccessoryBySlug } from "@/lib/accessories";
 import AccessoryDetailClient from "./AccessoryDetailClient";
+import ReviewSection from "@/components/ReviewSection";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -39,5 +40,10 @@ export default async function AccessoryDetailPage({ params }: PageProps) {
     .filter((i) => i.category === item.category && i.slug !== item.slug)
     .slice(0, 4);
 
-  return <AccessoryDetailClient item={item} relatedItems={related} />;
+  return (
+    <>
+      <AccessoryDetailClient item={item} relatedItems={related} />
+      <ReviewSection productSlug={slug} productName={item.name} productType="accessory" />
+    </>
+  );
 }
