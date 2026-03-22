@@ -6,8 +6,8 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 // Client-side Supabase client (uses anon key, respects RLS)
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// Server-side Supabase client (uses service role key, bypasses RLS)
+// Server-side Supabase client (uses service role key if available, falls back to anon key)
 export function getServiceSupabase() {
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || supabaseAnonKey;
   return createClient(supabaseUrl, serviceKey);
 }
