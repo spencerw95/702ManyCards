@@ -55,7 +55,8 @@ export function writeAdminUsers(users: AdminUser[]): void {
  */
 export function validateCredentials(username: string, password: string): AdminUser | null {
   const users = getAdminUsers();
-  return users.find((u) => u.username === username && u.password === password) || null;
+  // Case-insensitive username match, exact password match
+  return users.find((u) => u.username.toLowerCase() === username.toLowerCase() && u.password === password) || null;
 }
 
 /**
