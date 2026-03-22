@@ -69,6 +69,8 @@ function getAutoPriceLabel(rule: PricingRule): string {
 import { addToCart } from "@/lib/cart";
 import { isInWishlist, toggleWishlist } from "@/lib/wishlist";
 import { addRecentlyViewed } from "@/lib/recently-viewed";
+import ImageGallery from "@/components/ImageGallery";
+import PriceAlertButton from "@/components/PriceAlertButton";
 
 // ===== Card ID Map =====
 
@@ -291,14 +293,10 @@ export default function CardDetailClient({ item, relatedItems }: CardDetailClien
       <div style={styles.mainGrid} data-cd-grid>
         {/* Left Column: Image + Wishlist */}
         <div style={styles.leftCol} data-cd-left>
-          <div style={styles.imageWrapper} data-cd-image>
-            <img
-              src={imageUrl}
-              alt={item.cardName}
-              style={styles.cardImage}
-              loading="eager"
-            />
-          </div>
+          <ImageGallery
+            images={[imageUrl, ...(item.images || []).filter((u) => u !== imageUrl)]}
+            alt={item.cardName}
+          />
           <button
             onClick={handleToggleWishlist}
             style={{
@@ -308,6 +306,12 @@ export default function CardDetailClient({ item, relatedItems }: CardDetailClien
           >
             {wishlisted ? "\u2665 In Wishlist" : "\u2661 Add to Wishlist"}
           </button>
+          <PriceAlertButton
+            cardName={item.cardName}
+            slug={item.slug}
+            currentPrice={item.price}
+            imageUrl={imageUrl}
+          />
         </div>
 
         {/* Right Column: Details */}

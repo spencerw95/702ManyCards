@@ -85,6 +85,7 @@ export interface AccessoryItem {
   cost?: number; // what we paid
   quantity: number;
   imageUrl?: string;
+  images?: string[]; // additional product images
   brand?: string;
   color?: string;
   game?: AccessoryGame; // which TCG game this is for
@@ -170,6 +171,7 @@ export interface InventoryItem {
   game: TCGGame;
   slug: string;
   imageUrl?: string; // optional custom photo
+  images?: string[]; // additional product images
   pricingRule?: PricingRule; // auto-pricing rule
 }
 

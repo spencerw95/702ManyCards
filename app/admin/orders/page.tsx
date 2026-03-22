@@ -88,6 +88,7 @@ export default function OrdersPage() {
                 <th className="text-left px-4 py-3 font-semibold text-[var(--color-text-secondary)]">Total</th>
                 <th className="text-left px-4 py-3 font-semibold text-[var(--color-text-secondary)]">Status</th>
                 <th className="text-left px-4 py-3 font-semibold text-[var(--color-text-secondary)] hidden md:table-cell">Date</th>
+                <th className="text-left px-4 py-3 font-semibold text-[var(--color-text-secondary)] hidden lg:table-cell">Print</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--color-border)]">
@@ -123,12 +124,34 @@ export default function OrdersPage() {
                     <td className="px-4 py-3 text-[var(--color-text-secondary)] hidden md:table-cell">
                       {formatDate(order.createdAt)}
                     </td>
+                    <td className="px-4 py-3 hidden lg:table-cell">
+                      <div className="flex gap-1.5" onClick={(e) => e.stopPropagation()}>
+                        <a
+                          href={`/admin/orders/${order.id}/packing-slip`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                          Slip
+                        </a>
+                        <a
+                          href={`/admin/orders/${order.id}/invoice`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                          Invoice
+                        </a>
+                      </div>
+                    </td>
                   </tr>
 
                   {/* Expanded details */}
                   {expandedId === order.id && (
                     <tr key={`${order.id}-detail`}>
-                      <td colSpan={7} className="px-4 py-4 bg-[var(--color-bg-secondary)]">
+                      <td colSpan={8} className="px-4 py-4 bg-[var(--color-bg-secondary)]">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {/* Items list */}
                           <div>
@@ -200,7 +223,7 @@ export default function OrdersPage() {
               ))}
               {sorted.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-[var(--color-text-muted)]">
+                  <td colSpan={8} className="px-4 py-8 text-center text-[var(--color-text-muted)]">
                     No orders yet
                   </td>
                 </tr>

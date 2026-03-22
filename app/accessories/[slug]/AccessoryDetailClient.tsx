@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { AccessoryItem } from "@/lib/types";
 import { ACCESSORY_CATEGORY_LABELS } from "@/lib/types";
 import { addToCart } from "@/lib/cart";
+import ImageGallery from "@/components/ImageGallery";
 
 // ===== Gradient backgrounds per category =====
 function categoryGradient(category: string): string {
@@ -77,17 +78,18 @@ export default function AccessoryDetailClient({ item, relatedItems }: Props) {
 
       {/* Main layout */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-        {/* Left — Product Image */}
+        {/* Left — Product Images */}
         <div>
-          <div className={`relative aspect-square rounded-2xl overflow-hidden ${categoryGradient(item.category)}`}>
-            {item.imageUrl ? (
-              <img
-                src={item.imageUrl}
-                alt={item.name}
-                className="absolute inset-0 w-full h-full object-contain p-6"
-                loading="eager"
-              />
-            ) : (
+          {item.imageUrl || (item.images && item.images.length > 0) ? (
+            <ImageGallery
+              images={[
+                ...(item.imageUrl ? [item.imageUrl] : []),
+                ...((item.images || []).filter((u) => u !== item.imageUrl)),
+              ]}
+              alt={item.name}
+            />
+          ) : (
+            <div className={`relative aspect-square rounded-2xl overflow-hidden ${categoryGradient(item.category)}`}>
               <div className="absolute inset-0 flex flex-col items-center justify-center text-white/80">
                 <svg className="w-24 h-24 mb-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={0.8}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
@@ -96,13 +98,8 @@ export default function AccessoryDetailClient({ item, relatedItems }: Props) {
                   <span className="text-lg font-bold uppercase tracking-widest opacity-60">{item.brand}</span>
                 )}
               </div>
-            )}
-
-            {/* Badges */}
-            <span className={`absolute top-4 left-4 px-3 py-1 text-xs font-semibold rounded-full border ${categoryBadgeClass(item.category)}`}>
-              {ACCESSORY_CATEGORY_LABELS[item.category] || item.category}
-            </span>
-          </div>
+            </div>
+          )}
         </div>
 
         {/* Right — Details */}
