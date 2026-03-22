@@ -1,0 +1,17 @@
+<svg viewBox="0 0 420 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Option 2: Shield/Badge Style with Card Suit -->
+  <!-- Rounded badge background -->
+  <rect x="0" y="8" width="64" height="64" rx="14" fill="#0835DB"/>
+  <!-- Playing card silhouette inside badge -->
+  <rect x="18" y="16" width="28" height="40" rx="3" fill="white" opacity="0.15"/>
+  <rect x="20" y="18" width="24" height="36" rx="2.5" fill="none" stroke="white" stroke-width="1.5" opacity="0.6"/>
+  <!-- "702" text inside badge -->
+  <text x="32" y="44" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="900" font-size="20" fill="white" text-anchor="middle">702</text>
+
+  <!-- "MANY" on top line -->
+  <text x="78" y="36" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="300" font-size="18" letter-spacing="6" fill="#0835DB">MANY</text>
+  <!-- "CARDS" on bottom line, bold -->
+  <text x="78" y="60" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="800" font-size="28" fill="#0835DB">CARDS</text>
+  <!-- Accent line -->
+  <rect x="78" y="40" width="120" height="2" rx="1" fill="#3AC692"/>
+</svg>

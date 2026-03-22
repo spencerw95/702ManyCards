@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_Preview__preview_start",
+      "Bash(node -e \":*)",
+      "Bash(curl -s \"https://db.ygoprodeck.com/api/v7/cardinfo.php?name=Dark%20Magician\")",
+      "WebFetch(domain:api.scryfall.com)",
+      "Bash(curl -s \"https://api.pokemontcg.io/v2/cards?q=name:charizard&pageSize=5&select=id,name,set,number,rarity,images\")",
+      "Bash(python3 -c \"import sys,json; print\\(json.dumps\\(json.load\\(sys.stdin\\),indent=2\\)\\)\")",
+      "Bash(curl -s https://api.scryfall.com/cards/named?fuzzy=black+lotus)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\({''''name'''':d[''''name''''],''''set'''':d[''''set''''],''''set_name'''':d[''''set_name''''],''''collector_number'''':d[''''collector_number''''],''''rarity'''':d[''''rarity''''],''''image_uris'''':d.get\\(''''image_uris'''',{}\\).get\\(''''normal'''',''''''''\\)},indent=2\\)\\)\")",
+      "Bash(curl -s \"https://api.pokemontcg.io/v2/cards?q=name:pikachu&pageSize=5&select=id,name,set,number,rarity,images\")"
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+<svg viewBox="0 0 400 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Option 4: Bold Stacked with Card Frame -->
+  <!-- Card frame outline -->
+  <rect x="2" y="5" width="52" height="72" rx="6" fill="none" stroke="#0835DB" stroke-width="3"/>
+  <rect x="8" y="11" width="40" height="24" rx="2" fill="#0835DB" opacity="0.1"/>
+  <!-- "702" inside the card frame -->
+  <text x="28" y="30" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="900" font-size="18" fill="#0835DB" text-anchor="middle">702</text>
+  <!-- Star rating dots under -->
+  <circle cx="16" cy="46" r="3" fill="#3AC692"/>
+  <circle cx="28" cy="46" r="3" fill="#3AC692"/>
+  <circle cx="40" cy="46" r="3" fill="#3AC692"/>
+  <!-- ATK/DEF style bottom bar -->
+  <rect x="8" y="55" width="40" height="14" rx="2" fill="#0835DB" opacity="0.08"/>
+  <text x="28" y="65" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="700" font-size="8" fill="#0835DB" text-anchor="middle" letter-spacing="1">TCG SHOP</text>
+
+  <!-- Main text -->
+  <text x="68" y="38" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="800" font-size="32" fill="#0835DB">702</text>
+  <text x="128" y="38" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="800" font-size="32" fill="#3AC692">Many</text>
+  <text x="218" y="38" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="800" font-size="32" fill="#0835DB">Cards</text>
+
+  <!-- Tagline -->
+  <text x="68" y="58" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="400" font-size="12" fill="#6B7280" letter-spacing="2">PREMIUM YU-GI-OH SINGLES</text>
+</svg>

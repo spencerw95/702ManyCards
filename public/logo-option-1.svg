@@ -1,0 +1,15 @@
+<svg viewBox="0 0 400 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Option 1: Clean Modern with Stacked Cards Icon -->
+  <!-- Three stacked cards fanning out -->
+  <rect x="4" y="18" width="32" height="44" rx="4" fill="#3AC692" opacity="0.25" transform="rotate(-10 20 40)"/>
+  <rect x="10" y="14" width="32" height="44" rx="4" fill="#3AC692" opacity="0.5" transform="rotate(-3 26 36)"/>
+  <rect x="16" y="12" width="32" height="44" rx="4" fill="#3AC692"/>
+  <!-- Star emblem on front card -->
+  <path d="M32 24l3 6 6.5 1-4.7 4.6 1.1 6.4L32 38.5 26.1 42l1.1-6.4L22.5 31l6.5-1z" fill="white" opacity="0.9"/>
+
+  <!-- "702" in accent green -->
+  <text x="62" y="50" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="800" font-size="38" fill="#3AC692">702</text>
+
+  <!-- "ManyCards" in primary blue -->
+  <text x="158" y="50" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="700" font-size="38" fill="#0835DB">ManyCards</text>
+</svg>

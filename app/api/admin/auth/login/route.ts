@@ -1,0 +1,48 @@
+import { NextResponse } from "next/server";
+import { createToken, validateCredentials, COOKIE_NAME } from "@/lib/auth";
+import { logActivity } from "@/lib/activity-log";
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    const { username, password } = body;
+
+    if (!username || !password) {
+      return NextResponse.json(
+        { success: false, error: "Username and password are required" },
+        { status: 400 }
+      );
+    }
+
+    const user = validateCredentials(username, password);
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: "Invalid credentials" },
+        { status: 401 }
+      );
+    }
+
+    const token = createToken(user.username, user.role);
+
+    logActivity("login", user.username, `${user.username} logged in (${user.role})`);
+
+    const response = NextResponse.json({
+      success: true,
+      user: { username: user.username, role: user.role },
+    });
+    response.cookies.set(COOKIE_NAME, token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24, // 24 hours
+    });
+
+    return response;
+  } catch {
+    return NextResponse.json(
+      { success: false, error: "Invalid request body" },
+      { status: 400 }
+    );
+  }
+}

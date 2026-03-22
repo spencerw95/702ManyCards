@@ -1,0 +1,17 @@
+<svg viewBox="0 0 440 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Option 3: Sleek Horizontal with Deck Icon -->
+  <!-- Deck of cards icon (side view, like a stack) -->
+  <rect x="6" y="22" width="26" height="38" rx="3" fill="#0835DB" opacity="0.3"/>
+  <rect x="10" y="19" width="26" height="38" rx="3" fill="#0835DB" opacity="0.5"/>
+  <rect x="14" y="16" width="26" height="38" rx="3" fill="#0835DB" opacity="0.7"/>
+  <rect x="18" y="13" width="26" height="38" rx="3" fill="#0835DB"/>
+  <!-- Lightning bolt on top card -->
+  <path d="M34 20h-6l-2 10h5l-3 14 10-16h-6l2-8z" fill="#3AC692"/>
+
+  <!-- 702 -->
+  <text x="58" y="48" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="900" font-size="36" fill="#3AC692">702</text>
+  <!-- many -->
+  <text x="152" y="48" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="400" font-size="36" fill="#6B7280">many</text>
+  <!-- cards -->
+  <text x="258" y="48" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="800" font-size="36" fill="#0835DB">cards</text>
+</svg>

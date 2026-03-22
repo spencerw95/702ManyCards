@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+:root {
+  --color-primary: #00BCD4;
+  --color-primary-hover: #00A0B8;
+  --color-accent: #D4A843;
+  --color-accent-hover: #C49A38;
+  --color-bg: #F8F9FC;
+  --color-bg-secondary: #EEF0F5;
+  --color-bg-card: #FFFFFF;
+  --color-text: #121212;
+  --color-text-secondary: #5A6275;
+  --color-text-muted: #8B93A5;
+  --color-link: #00BCD4;
+  --color-border: #DDE1E9;
+  --color-border-hover: #C5CAD5;
+  --color-success: #16A34A;
+  --color-warning: #EAB308;
+  --color-danger: #DC2626;
+  --color-sold: #DC2626;
+  --radius: 8px;
+  --radius-sm: 4px;
+  --radius-lg: 12px;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --background: var(--color-bg);
+  --foreground: var(--color-text);
+}
+
+[data-theme="dark"] {
+  --color-primary: #4EEAFF;
+  --color-primary-hover: #30D4EA;
+  --color-accent: #D4A843;
+  --color-accent-hover: #C49A38;
+  --color-bg: #0D0F1A;
+  --color-bg-secondary: #151828;
+  --color-bg-card: #1A1D30;
+  --color-text: #F0F2FA;
+  --color-text-secondary: #A0A8C0;
+  --color-text-muted: #6B7394;
+  --color-link: #4EEAFF;
+  --color-border: #252A40;
+  --color-border-hover: #353B55;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+  --background: var(--color-bg);
+  --foreground: var(--color-text);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter);
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-inter), "Inter", system-ui, -apple-system, sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
+
+/* Card image hover effect */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Skeleton loading animation */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--color-bg-secondary) 25%, var(--color-border) 50%, var(--color-bg-secondary) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}

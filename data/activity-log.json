@@ -1,0 +1,60 @@
+[
+  {
+    "id": "090fa715",
+    "action": "login",
+    "username": "spencer",
+    "details": "spencer logged in (owner)",
+    "timestamp": "2026-03-22T00:02:59.243Z"
+  },
+  {
+    "id": "e77c49b4",
+    "action": "login",
+    "username": "spencer",
+    "details": "spencer logged in (owner)",
+    "timestamp": "2026-03-22T00:04:07.601Z"
+  },
+  {
+    "id": "0721ff7d",
+    "action": "login",
+    "username": "spencer",
+    "details": "spencer logged in (owner)",
+    "timestamp": "2026-03-22T00:05:36.136Z"
+  },
+  {
+    "id": "336ba25d",
+    "action": "card_updated",
+    "username": "unknown",
+    "details": "Updated \"Dark Magician\" (LOB-005-1st-NM)",
+    "metadata": {
+      "itemId": "LOB-005-1st-NM",
+      "cardName": "Dark Magician",
+      "changes": {
+        "price": 89.99,
+        "quantity": 1
+      }
+    },
+    "timestamp": "2026-03-22T00:08:13.782Z"
+  },
+  {
+    "id": "2d638916",
+    "action": "login",
+    "username": "spencer",
+    "details": "spencer logged in (owner)",
+    "timestamp": "2026-03-22T00:12:42.279Z"
+  },
+  {
+    "id": "c10f5114",
+    "action": "card_updated",
+    "username": "unknown",
+    "details": "Updated \"Dark Magician\" (LOB-005-1st-LP)",
+    "metadata": {
+      "itemId": "LOB-005-1st-LP",
+      "cardName": "Dark Magician",
+      "changes": {
+        "price": 69.99,
+        "quantity": 2
+      }
+    },
+    "timestamp": "2026-03-22T02:02:41.825Z"
+  }
+]
