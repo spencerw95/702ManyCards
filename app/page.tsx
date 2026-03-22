@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { getInventoryStats, getNewArrivals, getUniqueCards, sortItems } from "@/lib/inventory";
+import RecentlyViewed from "@/components/RecentlyViewed";
 
 export default function Home() {
   const stats = getInventoryStats();
@@ -147,6 +148,9 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      {/* Recently Viewed */}
+      <RecentlyViewed />
 
       {/* CTA */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">

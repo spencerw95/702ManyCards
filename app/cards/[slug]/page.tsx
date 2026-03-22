@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getAllItems, getItemsByCardName } from "@/lib/inventory";
 import CardDetailClient from "@/components/CardDetailClient";
 import ReviewSection from "@/components/ReviewSection";
+import RelatedCards from "@/components/RelatedCards";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -74,10 +75,22 @@ export default async function CardDetailPage({ params }: PageProps) {
   // Get ALL listings for this card name — every set, edition, condition
   const allListings = getItemsByCardName(item.cardName);
 
+  const cardSlug = item.cardName
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
   return (
     <>
       <CardDetailClient item={item} relatedItems={allListings} />
       <ReviewSection productSlug={slug} productName={item.cardName} productType="card" />
+      <RelatedCards
+        cardName={item.cardName}
+        setName={item.setName}
+        rarity={item.rarity}
+        game={item.game}
+        currentSlug={cardSlug}
+      />
     </>
   );
 }

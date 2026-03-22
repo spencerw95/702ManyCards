@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import type { InventoryItem, Order } from "@/lib/types";
 import type { ActivityEntry } from "@/lib/activity-log";
+import LowStockAlert from "@/components/admin/LowStockAlert";
 
 function formatRelativeTime(dateStr: string): string {
   const now = Date.now();
@@ -101,6 +102,9 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="space-y-6">
+      {/* Low Stock Alerts */}
+      <LowStockAlert />
+
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat) => (

@@ -211,6 +211,7 @@ export default function InventoryPage() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-[var(--color-border)] bg-[var(--color-bg-secondary)]">
+              <th className="text-left px-4 py-3 font-semibold text-[var(--color-text-secondary)] w-6"></th>
               <th className="text-left px-4 py-3 font-semibold text-[var(--color-text-secondary)]">Card Name</th>
               <th className="text-left px-4 py-3 font-semibold text-[var(--color-text-secondary)] hidden md:table-cell">Set</th>
               <th className="text-left px-4 py-3 font-semibold text-[var(--color-text-secondary)] hidden lg:table-cell">Game</th>
@@ -229,6 +230,21 @@ export default function InventoryPage() {
               const slug = item.slug || toSlug(item.cardName);
               return (
                 <tr key={item.id} className="hover:bg-[var(--color-bg-secondary)] transition-colors">
+                  <td className="pl-3 pr-0 py-3">
+                    {item.quantity === 0 ? (
+                      <span
+                        className="block w-2.5 h-2.5 rounded-full"
+                        style={{ backgroundColor: "var(--color-danger)" }}
+                        title="Out of stock"
+                      />
+                    ) : item.quantity <= 3 ? (
+                      <span
+                        className="block w-2.5 h-2.5 rounded-full"
+                        style={{ backgroundColor: "var(--color-warning)" }}
+                        title={`Low stock: ${item.quantity} left`}
+                      />
+                    ) : null}
+                  </td>
                   <td className="px-4 py-3 font-medium text-[var(--color-text)]">
                     <div className="flex items-center gap-2.5">
                       {imgUrl ? (
@@ -415,7 +431,7 @@ export default function InventoryPage() {
             })}
             {paginated.length === 0 && (
               <tr>
-                <td colSpan={10} className="px-4 py-8 text-center text-[var(--color-text-muted)]">
+                <td colSpan={11} className="px-4 py-8 text-center text-[var(--color-text-muted)]">
                   No items found
                 </td>
               </tr>

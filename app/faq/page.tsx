@@ -16,8 +16,8 @@ const FAQ_ITEMS: FAQItem[] = [
         We use industry-standard condition grades: Near Mint (NM), Lightly Played (LP),
         Moderately Played (MP), Heavily Played (HP), and Damaged (DMG). Every card is
         hand-inspected before listing. For full descriptions of each grade, visit our{" "}
-        <Link href="/about#grading" className="text-[var(--color-primary)] hover:underline font-medium">
-          grading standards
+        <Link href="/condition-guide" className="text-[var(--color-primary)] hover:underline font-medium">
+          Card Condition Guide
         </Link>
         .
       </>

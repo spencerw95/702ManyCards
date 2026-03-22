@@ -54,6 +54,7 @@ export default function Footer() {
               <li><Link href="/faq" className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">FAQ</Link></li>
               <li><Link href="/about" className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">About Us</Link></li>
               <li><Link href="/contact" className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">Contact</Link></li>
+              <li><Link href="/condition-guide" className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">Condition Guide</Link></li>
               <li><Link href="/faq#returns" className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">Returns Policy</Link></li>
             </ul>
           </div>

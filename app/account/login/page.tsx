@@ -80,9 +80,14 @@ export default function CustomerLoginPage() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1.5">
-                Password
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label htmlFor="password" className="block text-sm font-medium text-[var(--color-text-secondary)]">
+                  Password
+                </label>
+                <Link href="/account/forgot-password" className="text-xs text-[var(--color-primary)] hover:underline">
+                  Forgot password?
+                </Link>
+              </div>
               <input
                 id="password"
                 type="password"

@@ -240,3 +240,20 @@ export function changeCustomerPassword(
   writeCustomers(customers);
   return true;
 }
+
+/** Reset password by email (no old password required — for password reset flow) */
+export function resetPasswordByEmail(
+  email: string,
+  newPassword: string
+): boolean {
+  const customers = readCustomers();
+  const index = customers.findIndex(
+    (c) => c.email.toLowerCase() === email.toLowerCase()
+  );
+  if (index === -1) return false;
+
+  customers[index].passwordHash = hashPassword(newPassword);
+  customers[index].updatedAt = new Date().toISOString();
+  writeCustomers(customers);
+  return true;
+}

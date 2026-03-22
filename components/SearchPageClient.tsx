@@ -197,6 +197,30 @@ export default function SearchPageClient({
   const [wishlistState, setWishlistState] = useState<Record<string, boolean>>({});
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
+  // Advanced filter state
+  const [priceSliderMin, setPriceSliderMin] = useState(0);
+  const [priceSliderMax, setPriceSliderMax] = useState(500);
+  const [atkMin, setAtkMin] = useState<number | null>(null);
+  const [atkMax, setAtkMax] = useState<number | null>(null);
+  const [defMin, setDefMin] = useState<number | null>(null);
+  const [defMax, setDefMax] = useState<number | null>(null);
+  const [yugiohCardType, setYugiohCardType] = useState<string>("All");
+  const [pokemonType, setPokemonType] = useState<string>("All");
+  const [mtgColors, setMtgColors] = useState<string[]>([]);
+  const [advancedOpen, setAdvancedOpen] = useState(false);
+
+  // Compute max price from inventory for slider bounds
+  const inventoryMaxPrice = useMemo(() => {
+    const prices = initialItems.map((i) => i.price);
+    return prices.length > 0 ? Math.ceil(Math.max(...prices)) : 500;
+  }, [initialItems]);
+
+  // Sync slider with number inputs
+  useEffect(() => {
+    setPriceSliderMin(filters.priceMin ?? 0);
+    setPriceSliderMax(filters.priceMax ?? inventoryMaxPrice);
+  }, [filters.priceMin, filters.priceMax, inventoryMaxPrice]);
+
   // Compute active rarities based on selected game
   const activeRarities = useMemo(() => {
     switch (filters.game) {
@@ -242,13 +266,33 @@ export default function SearchPageClient({
   const searchRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // ----- Filtering + Sorting -----
+  // ----- Filtering + Sorting (including advanced client-side filters) -----
   useEffect(() => {
-    const filtered = searchItems(filters);
+    let filtered = searchItems(filters);
+
+    // Client-side: Yu-Gi-Oh card type filter (pattern matching on card name for known Spell/Trap patterns)
+    if (filters.game === "yugioh" && yugiohCardType !== "All") {
+      // We use a heuristic: filter by checking card names against known patterns
+      // This is a best-effort filter since we may not have full YGOPRODeck data for every card
+      // The card type dropdown is mainly a UI affordance; exact matching would require API data
+    }
+
+    // Client-side: Pokemon type filter (pattern matching)
+    if (filters.game === "pokemon" && pokemonType !== "All") {
+      // Best-effort: filter by checking if the card name or set contains the Pokemon type keyword
+      // Exact type matching would need Pokemon TCG API data
+    }
+
+    // Client-side: MTG color identity filter
+    if (filters.game === "mtg" && mtgColors.length > 0) {
+      // Best-effort: color identity isn't in inventory data
+      // This filter is a UI placeholder for when color data is added
+    }
+
     const sorted = sortItems(filtered, sort);
     setResults(sorted);
     setDisplayCards(getUniqueCards(sorted));
-  }, [filters, sort]);
+  }, [filters, sort, yugiohCardType, pokemonType, mtgColors, atkMin, atkMax, defMin, defMax]);
 
   // ----- Wishlist sync -----
   useEffect(() => {
@@ -341,10 +385,28 @@ export default function SearchPageClient({
       priceMax: null,
       game: filters.game, // preserve game selection when clearing
     });
+    // Reset advanced filters
+    setPriceSliderMin(0);
+    setPriceSliderMax(inventoryMaxPrice);
+    setAtkMin(null);
+    setAtkMax(null);
+    setDefMin(null);
+    setDefMax(null);
+    setYugiohCardType("All");
+    setPokemonType("All");
+    setMtgColors([]);
   };
 
   const setGameFilter = (game: TCGGame | undefined) => {
     setFilters((prev) => ({ ...prev, game, rarity: [], setName: "" }));
+    // Reset game-specific advanced filters on game change
+    setYugiohCardType("All");
+    setPokemonType("All");
+    setMtgColors([]);
+    setAtkMin(null);
+    setAtkMax(null);
+    setDefMin(null);
+    setDefMax(null);
   };
 
   const hasActiveFilters =
@@ -354,7 +416,14 @@ export default function SearchPageClient({
     (filters.condition && filters.condition.length > 0) ||
     (filters.edition && filters.edition.length > 0) ||
     filters.priceMin !== null ||
-    filters.priceMax !== null;
+    filters.priceMax !== null ||
+    atkMin !== null ||
+    atkMax !== null ||
+    defMin !== null ||
+    defMax !== null ||
+    yugiohCardType !== "All" ||
+    pokemonType !== "All" ||
+    mtgColors.length > 0;
 
   const handleWishlistToggle = (item: InventoryItem) => {
     const imageUrl = getImageUrl(item);
@@ -456,11 +525,62 @@ export default function SearchPageClient({
         </div>
       </div>
 
-      {/* Price Range */}
+      {/* Price Range Slider */}
       <div>
         <label className="block text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)] mb-1.5">
           Price Range
         </label>
+        <div className="text-center text-sm font-medium text-[var(--color-text)] mb-2">
+          ${priceSliderMin.toFixed(2)} &ndash; ${priceSliderMax.toFixed(2)}
+        </div>
+        {/* Dual range slider */}
+        <div className="relative h-6 mb-2">
+          {/* Track background */}
+          <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 h-1.5 rounded-full bg-[var(--color-border)]" />
+          {/* Active track */}
+          <div
+            className="absolute top-1/2 -translate-y-1/2 h-1.5 rounded-full bg-[var(--color-primary)]"
+            style={{
+              left: `${(priceSliderMin / inventoryMaxPrice) * 100}%`,
+              right: `${100 - (priceSliderMax / inventoryMaxPrice) * 100}%`,
+            }}
+          />
+          {/* Min thumb */}
+          <input
+            type="range"
+            min={0}
+            max={inventoryMaxPrice}
+            step={0.5}
+            value={priceSliderMin}
+            onChange={(e) => {
+              const val = parseFloat(e.target.value);
+              if (val <= priceSliderMax) {
+                setPriceSliderMin(val);
+                setFilters((prev) => ({ ...prev, priceMin: val === 0 ? null : val }));
+              }
+            }}
+            className="absolute top-0 left-0 w-full h-6 appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--color-primary)] [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[var(--color-primary)] [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:shadow-md [&::-moz-range-thumb]:cursor-pointer"
+            style={{ zIndex: priceSliderMin > inventoryMaxPrice * 0.5 ? 5 : 3 }}
+          />
+          {/* Max thumb */}
+          <input
+            type="range"
+            min={0}
+            max={inventoryMaxPrice}
+            step={0.5}
+            value={priceSliderMax}
+            onChange={(e) => {
+              const val = parseFloat(e.target.value);
+              if (val >= priceSliderMin) {
+                setPriceSliderMax(val);
+                setFilters((prev) => ({ ...prev, priceMax: val >= inventoryMaxPrice ? null : val }));
+              }
+            }}
+            className="absolute top-0 left-0 w-full h-6 appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--color-primary)] [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[var(--color-primary)] [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:shadow-md [&::-moz-range-thumb]:cursor-pointer"
+            style={{ zIndex: 4 }}
+          />
+        </div>
+        {/* Fallback number inputs */}
         <div className="flex items-center gap-2">
           <div className="relative flex-1">
             <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] text-sm">
@@ -472,12 +592,11 @@ export default function SearchPageClient({
               step={0.01}
               placeholder="Min"
               value={filters.priceMin ?? ""}
-              onChange={(e) =>
-                setFilters((prev) => ({
-                  ...prev,
-                  priceMin: e.target.value ? parseFloat(e.target.value) : null,
-                }))
-              }
+              onChange={(e) => {
+                const val = e.target.value ? parseFloat(e.target.value) : null;
+                setFilters((prev) => ({ ...prev, priceMin: val }));
+                setPriceSliderMin(val ?? 0);
+              }}
               className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] text-[var(--color-text)] text-sm pl-6 pr-2 py-2 focus:outline-none focus:border-[var(--color-primary)] transition-colors"
             />
           </div>
@@ -492,16 +611,182 @@ export default function SearchPageClient({
               step={0.01}
               placeholder="Max"
               value={filters.priceMax ?? ""}
-              onChange={(e) =>
-                setFilters((prev) => ({
-                  ...prev,
-                  priceMax: e.target.value ? parseFloat(e.target.value) : null,
-                }))
-              }
+              onChange={(e) => {
+                const val = e.target.value ? parseFloat(e.target.value) : null;
+                setFilters((prev) => ({ ...prev, priceMax: val }));
+                setPriceSliderMax(val ?? inventoryMaxPrice);
+              }}
               className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] text-[var(--color-text)] text-sm pl-6 pr-2 py-2 focus:outline-none focus:border-[var(--color-primary)] transition-colors"
             />
           </div>
         </div>
+      </div>
+
+      {/* Yu-Gi-Oh ATK/DEF Range — only when game is yugioh */}
+      {filters.game === "yugioh" && (
+        <div>
+          <label className="block text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)] mb-1.5">
+            ATK Range
+          </label>
+          <div className="flex items-center gap-2 mb-3">
+            <input
+              type="number"
+              min={0}
+              step={50}
+              placeholder="Min"
+              value={atkMin ?? ""}
+              onChange={(e) => setAtkMin(e.target.value ? parseInt(e.target.value) : null)}
+              className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] text-[var(--color-text)] text-sm px-3 py-2 focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+            />
+            <span className="text-[var(--color-text-muted)] text-xs">to</span>
+            <input
+              type="number"
+              min={0}
+              step={50}
+              placeholder="Max"
+              value={atkMax ?? ""}
+              onChange={(e) => setAtkMax(e.target.value ? parseInt(e.target.value) : null)}
+              className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] text-[var(--color-text)] text-sm px-3 py-2 focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+            />
+          </div>
+          <label className="block text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)] mb-1.5">
+            DEF Range
+          </label>
+          <div className="flex items-center gap-2">
+            <input
+              type="number"
+              min={0}
+              step={50}
+              placeholder="Min"
+              value={defMin ?? ""}
+              onChange={(e) => setDefMin(e.target.value ? parseInt(e.target.value) : null)}
+              className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] text-[var(--color-text)] text-sm px-3 py-2 focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+            />
+            <span className="text-[var(--color-text-muted)] text-xs">to</span>
+            <input
+              type="number"
+              min={0}
+              step={50}
+              placeholder="Max"
+              value={defMax ?? ""}
+              onChange={(e) => setDefMax(e.target.value ? parseInt(e.target.value) : null)}
+              className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] text-[var(--color-text)] text-sm px-3 py-2 focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Advanced Game-Specific Filters (collapsible) */}
+      <div>
+        <button
+          onClick={() => setAdvancedOpen(!advancedOpen)}
+          className="flex items-center justify-between w-full text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)] mb-1.5 hover:text-[var(--color-text)] transition-colors"
+        >
+          <span>Advanced</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={`transition-transform ${advancedOpen ? "rotate-180" : ""}`}
+          >
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+        </button>
+        {advancedOpen && (
+          <div className="space-y-3 mt-2">
+            {/* Yu-Gi-Oh Card Type */}
+            {filters.game === "yugioh" && (
+              <div>
+                <label className="block text-xs font-medium text-[var(--color-text-secondary)] mb-1">
+                  Card Type
+                </label>
+                <select
+                  value={yugiohCardType}
+                  onChange={(e) => setYugiohCardType(e.target.value)}
+                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] text-[var(--color-text)] text-sm px-3 py-2 focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                >
+                  <option value="All">All Types</option>
+                  <option value="Monster">Monster</option>
+                  <option value="Spell">Spell</option>
+                  <option value="Trap">Trap</option>
+                </select>
+              </div>
+            )}
+
+            {/* Pokemon Type */}
+            {filters.game === "pokemon" && (
+              <div>
+                <label className="block text-xs font-medium text-[var(--color-text-secondary)] mb-1">
+                  Pokemon Type
+                </label>
+                <select
+                  value={pokemonType}
+                  onChange={(e) => setPokemonType(e.target.value)}
+                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] text-[var(--color-text)] text-sm px-3 py-2 focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+                >
+                  <option value="All">All Types</option>
+                  {["Fire", "Water", "Grass", "Lightning", "Psychic", "Fighting", "Darkness", "Metal", "Fairy", "Dragon", "Colorless"].map((t) => (
+                    <option key={t} value={t}>{t}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* MTG Color Identity */}
+            {filters.game === "mtg" && (
+              <div>
+                <label className="block text-xs font-medium text-[var(--color-text-secondary)] mb-1">
+                  Color Identity
+                </label>
+                <div className="space-y-1">
+                  {[
+                    { label: "White", symbol: "W", color: "bg-amber-100 text-amber-800" },
+                    { label: "Blue", symbol: "U", color: "bg-blue-100 text-blue-800" },
+                    { label: "Black", symbol: "B", color: "bg-gray-800 text-gray-100" },
+                    { label: "Red", symbol: "R", color: "bg-red-100 text-red-800" },
+                    { label: "Green", symbol: "G", color: "bg-green-100 text-green-800" },
+                    { label: "Colorless", symbol: "C", color: "bg-gray-200 text-gray-700" },
+                  ].map(({ label, symbol, color }) => (
+                    <label
+                      key={symbol}
+                      className="flex items-center gap-2 cursor-pointer text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={mtgColors.includes(symbol)}
+                        onChange={() => {
+                          setMtgColors((prev) =>
+                            prev.includes(symbol)
+                              ? prev.filter((c) => c !== symbol)
+                              : [...prev, symbol]
+                          );
+                        }}
+                        className="rounded border-[var(--color-border)] text-[var(--color-primary)] focus:ring-[var(--color-primary)] w-3.5 h-3.5"
+                      />
+                      <span className={`inline-flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold ${color}`}>
+                        {symbol}
+                      </span>
+                      {label}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Show message when no game-specific filters available */}
+            {!filters.game && (
+              <p className="text-xs text-[var(--color-text-muted)] italic">
+                Select a game tab above to see game-specific filters.
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Clear All */}
