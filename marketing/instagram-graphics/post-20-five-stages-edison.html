@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080, height=1080">
+<title>Post 20 — The 5 Stages of Getting Into Edison Format</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Oswald:wght@700&family=Bangers&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px;
+    height: 1080px;
+    background: #0D0F1A;
+    font-family: 'Inter', sans-serif;
+    color: #F0F2FA;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Header */
+  .header {
+    position: absolute;
+    top: 30px;
+    left: 0;
+    right: 0;
+    text-align: center;
+  }
+
+  .header h1 {
+    font-family: 'Bangers', cursive;
+    font-size: 50px;
+    letter-spacing: 3px;
+    color: #F0F2FA;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.6);
+  }
+
+  .header h1 span { color: #00BCD4; }
+
+  .header .subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    color: #ff4444;
+    font-weight: 700;
+    margin-top: 6px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+
+  /* Stages container */
+  .stages {
+    position: absolute;
+    top: 155px;
+    left: 50px;
+    right: 50px;
+    bottom: 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .stage {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    padding: 18px 24px;
+    border-radius: 16px;
+    position: relative;
+    flex: 1;
+  }
+
+  .stage-1 {
+    background: linear-gradient(90deg, rgba(120, 120, 140, 0.1) 0%, transparent 100%);
+    border-left: 4px solid #666;
+  }
+  .stage-2 {
+    background: linear-gradient(90deg, rgba(212, 168, 67, 0.08) 0%, transparent 100%);
+    border-left: 4px solid #887730;
+  }
+  .stage-3 {
+    background: linear-gradient(90deg, rgba(0, 188, 212, 0.1) 0%, transparent 100%);
+    border-left: 4px solid #00BCD4;
+  }
+  .stage-4 {
+    background: linear-gradient(90deg, rgba(255, 152, 0, 0.08) 0%, transparent 100%);
+    border-left: 4px solid #FF9800;
+  }
+  .stage-5 {
+    background: linear-gradient(90deg, rgba(0, 188, 212, 0.15) 0%, rgba(0, 188, 212, 0.03) 100%);
+    border-left: 4px solid #00BCD4;
+    box-shadow: 0 0 30px rgba(0, 188, 212, 0.1);
+  }
+
+  /* Stage number */
+  .stage-num {
+    font-family: 'Bangers', cursive;
+    font-size: 40px;
+    min-width: 50px;
+    text-align: center;
+  }
+
+  .stage-1 .stage-num { color: #666; }
+  .stage-2 .stage-num { color: #887730; }
+  .stage-3 .stage-num { color: #00BCD4; }
+  .stage-4 .stage-num { color: #FF9800; }
+  .stage-5 .stage-num { color: #00BCD4; text-shadow: 0 0 20px rgba(0, 188, 212, 0.5); }
+
+  /* Faces */
+  .face {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #FFD93D, #F0C020);
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  /* Face 1 - confused */
+  .face-1 .eye {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #333;
+    border-radius: 50%;
+    top: 28px;
+  }
+  .face-1 .eye.left { left: 20px; }
+  .face-1 .eye.right { right: 20px; }
+  .face-1 .mouth {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 22px;
+    height: 22px;
+    border: 3px solid #333;
+    border-radius: 50%;
+    background: transparent;
+  }
+  .face-1 .question {
+    position: absolute;
+    top: -8px;
+    right: -4px;
+    font-size: 22px;
+    font-weight: 900;
+    color: #666;
+  }
+
+  /* Face 2 - casual shrug */
+  .face-2 .eye {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #333;
+    border-radius: 50%;
+    top: 30px;
+  }
+  .face-2 .eye.left { left: 20px; }
+  .face-2 .eye.right { right: 20px; }
+  .face-2 .mouth {
+    position: absolute;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 25px;
+    height: 2px;
+    background: #333;
+    border-radius: 2px;
+  }
+
+  /* Face 3 - manic excited */
+  .face-3 {
+    box-shadow: 0 0 25px rgba(0, 188, 212, 0.4);
+  }
+  .face-3 .eye {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: #333;
+    border-radius: 50%;
+    top: 25px;
+  }
+  .face-3 .eye.left { left: 16px; }
+  .face-3 .eye.right { right: 16px; }
+  .face-3 .eye::after {
+    content: '';
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background: white;
+    border-radius: 50%;
+    top: 3px;
+    right: 3px;
+  }
+  .face-3 .mouth {
+    position: absolute;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 42px;
+    height: 22px;
+    background: #333;
+    border-radius: 0 0 22px 22px;
+  }
+
+  /* Face 4 - slightly panicked */
+  .face-4 .eye {
+    position: absolute;
+    width: 12px;
+    height: 14px;
+    background: #333;
+    border-radius: 50%;
+    top: 28px;
+  }
+  .face-4 .eye.left { left: 18px; }
+  .face-4 .eye.right { right: 18px; }
+  .face-4 .sweat {
+    position: absolute;
+    top: 14px;
+    right: 8px;
+    width: 8px;
+    height: 12px;
+    background: #87CEEB;
+    border-radius: 50% 50% 50% 50% / 30% 30% 70% 70%;
+  }
+  .face-4 .mouth {
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 14px;
+    border-top: 3px solid #333;
+    border-radius: 50% 50% 0 0;
+  }
+
+  /* Face 5 - enlightened */
+  .face-5 {
+    box-shadow: 0 0 40px rgba(0, 188, 212, 0.5), 0 0 80px rgba(0, 188, 212, 0.2);
+  }
+  .face-5 .eye {
+    position: absolute;
+    width: 6px;
+    height: 2px;
+    background: #333;
+    top: 34px;
+    border-bottom: 3px solid #333;
+    width: 16px;
+    border-radius: 0 0 50% 50%;
+  }
+  .face-5 .eye.left { left: 20px; }
+  .face-5 .eye.right { right: 20px; }
+  .face-5 .mouth {
+    position: absolute;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 28px;
+    height: 14px;
+    border-bottom: 3px solid #333;
+    border-radius: 0 0 14px 14px;
+  }
+
+  /* Halo */
+  .halo {
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 54px;
+    height: 16px;
+    border: 3px solid #00BCD4;
+    border-radius: 50%;
+    box-shadow: 0 0 15px rgba(0, 188, 212, 0.5);
+    background: transparent;
+  }
+
+  /* Stage text */
+  .stage-text {
+    flex: 1;
+  }
+
+  .stage-quote {
+    font-family: 'Inter', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  .stage-1 .stage-quote { color: #999; }
+  .stage-2 .stage-quote { color: #bba855; }
+  .stage-3 .stage-quote { color: #00BCD4; }
+  .stage-4 .stage-quote { color: #FF9800; }
+  .stage-5 .stage-quote { color: #00BCD4; text-shadow: 0 0 15px rgba(0, 188, 212, 0.3); }
+
+  .stage-desc {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    color: #666;
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  /* Side text */
+  .side-text {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%) rotate(90deg);
+    font-family: 'Oswald', sans-serif;
+    font-size: 14px;
+    color: rgba(255, 68, 68, 0.25);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* Arrow indicators between stages */
+  .arrow {
+    position: absolute;
+    right: 30px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 10px solid rgba(255,255,255,0.1);
+  }
+
+  /* Logo */
+  .logo {
+    position: absolute;
+    bottom: 22px;
+    right: 40px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 18px;
+    color: #F0F2FA;
+    opacity: 0.4;
+    letter-spacing: 2px;
+  }
+  .logo span { color: #00BCD4; }
+
+  .edison-badge {
+    position: absolute;
+    bottom: 22px;
+    left: 40px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 14px;
+    color: #D4A843;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: 0.5;
+    border: 1px solid rgba(212, 168, 67, 0.3);
+    padding: 4px 12px;
+    border-radius: 4px;
+  }
+</style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>THE <span>5 STAGES</span> OF EDISON</h1>
+    <div class="subtitle">There is no going back</div>
+  </div>
+
+  <div class="stages">
+    <!-- Stage 1 -->
+    <div class="stage stage-1">
+      <div class="stage-num">1</div>
+      <div class="face face-1">
+        <div class="eye left"></div>
+        <div class="eye right"></div>
+        <div class="mouth"></div>
+        <div class="question">?</div>
+      </div>
+      <div class="stage-text">
+        <div class="stage-quote">"What's Edison Format?"</div>
+        <div class="stage-desc">Blissful ignorance</div>
+      </div>
+    </div>
+
+    <!-- Stage 2 -->
+    <div class="stage stage-2">
+      <div class="stage-num">2</div>
+      <div class="face face-2">
+        <div class="eye left"></div>
+        <div class="eye right"></div>
+        <div class="mouth"></div>
+      </div>
+      <div class="stage-text">
+        <div class="stage-quote">"I'll try one game, can't hurt"</div>
+        <div class="stage-desc">Famous last words</div>
+      </div>
+    </div>
+
+    <!-- Stage 3 -->
+    <div class="stage stage-3">
+      <div class="stage-num">3</div>
+      <div class="face face-3">
+        <div class="eye left"></div>
+        <div class="eye right"></div>
+        <div class="mouth"></div>
+      </div>
+      <div class="stage-text">
+        <div class="stage-quote">*builds three Edison decks in one week*</div>
+        <div class="stage-desc">The obsession has begun</div>
+      </div>
+    </div>
+
+    <!-- Stage 4 -->
+    <div class="stage stage-4">
+      <div class="stage-num">4</div>
+      <div class="face face-4">
+        <div class="eye left"></div>
+        <div class="eye right"></div>
+        <div class="sweat"></div>
+        <div class="mouth"></div>
+      </div>
+      <div class="stage-text">
+        <div class="stage-quote">*quietly sells modern collection*</div>
+        <div class="stage-desc">No turning back now</div>
+      </div>
+    </div>
+
+    <!-- Stage 5 -->
+    <div class="stage stage-5">
+      <div class="stage-num">5</div>
+      <div class="face face-5">
+        <div class="halo"></div>
+        <div class="eye left"></div>
+        <div class="eye right"></div>
+        <div class="mouth"></div>
+      </div>
+      <div class="stage-text">
+        <div class="stage-quote">"Edison is the only real YuGiOh"</div>
+        <div class="stage-desc">Enlightenment achieved</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="side-text">THERE IS NO GOING BACK</div>
+
+  <div class="edison-badge">Edison Format</div>
+  <div class="logo"><span>702</span>ManyCards</div>
+
+</body>
+</html>

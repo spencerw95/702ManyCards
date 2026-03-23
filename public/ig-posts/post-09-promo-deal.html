@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080, initial-scale=1">
+<title>702ManyCards - Promo Deal</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700;900&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  width: 1080px;
+  height: 1080px;
+  margin: 0;
+  overflow: hidden;
+  background: #0D0F1A;
+  font-family: 'Inter', sans-serif;
+  position: relative;
+}
+
+/* Starburst background */
+.starburst {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 900px;
+  height: 900px;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  background:
+    repeating-conic-gradient(
+      from 0deg,
+      rgba(212,168,67,0.06) 0deg 10deg,
+      transparent 10deg 20deg
+    );
+  border-radius: 50%;
+  animation: rotateSlow 30s linear infinite;
+}
+
+@keyframes rotateSlow {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Neon glow circle */
+.glow-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 650px;
+  height: 650px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(255,50,80,0.1) 0%, transparent 60%);
+  z-index: 0;
+}
+
+/* Scattered sparkle dots */
+.sparkle {
+  position: absolute;
+  border-radius: 50%;
+  background: #D4A843;
+  z-index: 0;
+  animation: sparkleAnim 2s ease-in-out infinite;
+}
+.sparkle:nth-child(3) { width: 5px; height: 5px; top: 120px; left: 200px; animation-delay: 0s; }
+.sparkle:nth-child(4) { width: 4px; height: 4px; top: 200px; right: 150px; animation-delay: 0.3s; }
+.sparkle:nth-child(5) { width: 6px; height: 6px; bottom: 200px; left: 150px; animation-delay: 0.7s; }
+.sparkle:nth-child(6) { width: 4px; height: 4px; bottom: 250px; right: 200px; animation-delay: 1s; }
+.sparkle:nth-child(7) { width: 5px; height: 5px; top: 350px; left: 80px; animation-delay: 0.5s; }
+.sparkle:nth-child(8) { width: 3px; height: 3px; top: 400px; right: 100px; animation-delay: 1.3s; }
+
+@keyframes sparkleAnim {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.8); }
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+}
+
+.logo {
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: auto;
+}
+
+.this-week {
+  font-family: 'Inter', sans-serif;
+  font-size: 32px;
+  color: #FF4466;
+  font-weight: 700;
+  letter-spacing: 8px;
+  text-transform: uppercase;
+  margin-bottom: 15px;
+  animation: urgencyPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes urgencyPulse {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+.discount {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 220px;
+  color: #FFFFFF;
+  text-align: center;
+  line-height: 0.85;
+  text-shadow:
+    0 0 30px rgba(255,68,102,0.7),
+    0 0 60px rgba(255,68,102,0.4),
+    0 0 100px rgba(255,68,102,0.2);
+}
+
+.discount span {
+  color: #FF4466;
+}
+
+.off-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 100px;
+  color: #D4A843;
+  text-shadow: 0 0 20px rgba(212,168,67,0.5);
+  margin-top: -10px;
+}
+
+.code-box {
+  margin-top: 30px;
+  padding: 18px 60px;
+  border: 3px dashed #D4A843;
+  border-radius: 12px;
+  background: rgba(212,168,67,0.08);
+}
+
+.code-label {
+  font-size: 22px;
+  color: rgba(240,242,250,0.5);
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+.code-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 72px;
+  color: #D4A843;
+  text-align: center;
+  letter-spacing: 10px;
+}
+
+.week-only {
+  font-size: 28px;
+  color: rgba(240,242,250,0.6);
+  font-weight: 700;
+  margin-top: 25px;
+  letter-spacing: 3px;
+}
+
+.bottom-url {
+  position: absolute;
+  bottom: 45px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Inter', sans-serif;
+  font-size: 28px;
+  color: rgba(240,242,250,0.5);
+  letter-spacing: 3px;
+  font-weight: 600;
+}
+</style>
+</head>
+<body>
+  <div class="starburst"></div>
+  <div class="glow-circle"></div>
+  <div class="sparkle"></div>
+  <div class="sparkle"></div>
+  <div class="sparkle"></div>
+  <div class="sparkle"></div>
+  <div class="sparkle"></div>
+  <div class="sparkle"></div>
+
+  <div class="container">
+    <img src="../../public/logo.png" alt="702ManyCards" class="logo">
+
+    <div class="this-week">&#128293; THIS WEEK ONLY &#128293;</div>
+    <div class="discount"><span>10</span>%</div>
+    <div class="off-text">OFF</div>
+
+    <div class="code-box">
+      <div class="code-label">USE CODE</div>
+      <div class="code-text">702DEAL</div>
+    </div>
+
+    <div class="week-only">All singles &amp; sealed product</div>
+  </div>
+
+  <div class="bottom-url">702manycards.com</div>
+</body>
+</html>

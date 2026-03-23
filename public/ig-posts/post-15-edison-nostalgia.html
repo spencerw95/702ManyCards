@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080, initial-scale=1">
+<title>702ManyCards - The Golden Era</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Oswald:wght@400;500;600;700&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  width: 1080px;
+  height: 1080px;
+  margin: 0;
+  overflow: hidden;
+  background: #0D0F1A;
+  font-family: 'Inter', sans-serif;
+  position: relative;
+}
+
+/* Warm vintage grid */
+body::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image:
+    linear-gradient(rgba(212,168,67,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(212,168,67,0.05) 1px, transparent 1px);
+  background-size: 54px 54px;
+  z-index: 0;
+}
+
+/* Golden center glow */
+body::after {
+  content: '';
+  position: absolute;
+  top: 45%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 900px;
+  height: 900px;
+  background: radial-gradient(circle, rgba(212,168,67,0.12) 0%, rgba(212,168,67,0.04) 35%, transparent 60%);
+  z-index: 0;
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 60px;
+}
+
+.logo {
+  width: 170px;
+  height: auto;
+  margin-bottom: 16px;
+}
+
+.edison-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, rgba(212,168,67,0.2), rgba(212,168,67,0.08));
+  border: 1.5px solid rgba(212,168,67,0.5);
+  border-radius: 8px;
+  padding: 8px 24px;
+  margin-bottom: 24px;
+}
+
+.edison-badge span {
+  font-family: 'Oswald', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: #D4A843;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+.badge-dot {
+  width: 8px;
+  height: 8px;
+  background: #D4A843;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(212,168,67,0.6);
+}
+
+/* Large background year */
+.bg-year {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Oswald', sans-serif;
+  font-size: 320px;
+  font-weight: 700;
+  color: rgba(212,168,67,0.06);
+  z-index: 0;
+  letter-spacing: 10px;
+  user-select: none;
+}
+
+.main-title {
+  font-family: 'Oswald', sans-serif;
+  font-size: 100px;
+  font-weight: 700;
+  color: #D4A843;
+  text-align: center;
+  line-height: 1;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  text-shadow:
+    0 0 40px rgba(212,168,67,0.5),
+    0 0 80px rgba(212,168,67,0.2);
+}
+
+.main-subtitle {
+  font-family: 'Oswald', sans-serif;
+  font-size: 40px;
+  font-weight: 500;
+  color: #F0F2FA;
+  letter-spacing: 8px;
+  text-transform: uppercase;
+  margin-bottom: 30px;
+  text-shadow: 0 0 15px rgba(240,242,250,0.2);
+}
+
+.divider {
+  width: 200px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #D4A843, #00BCD4, transparent);
+  margin-bottom: 30px;
+}
+
+/* Nostalgia elements */
+.nostalgia-items {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+.nostalgia-row {
+  display: flex;
+  gap: 14px;
+}
+
+.memory-tag {
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border: 1px solid;
+}
+
+.memory-tag.gold {
+  background: linear-gradient(135deg, rgba(212,168,67,0.12), rgba(212,168,67,0.04));
+  border-color: rgba(212,168,67,0.3);
+  color: #D4A843;
+}
+
+.memory-tag.cyan {
+  background: linear-gradient(135deg, rgba(0,188,212,0.12), rgba(0,188,212,0.04));
+  border-color: rgba(0,188,212,0.3);
+  color: #00BCD4;
+}
+
+.memory-tag.warm {
+  background: linear-gradient(135deg, rgba(220,150,50,0.12), rgba(220,150,50,0.04));
+  border-color: rgba(220,150,50,0.3);
+  color: #DCA032;
+}
+
+.quote-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 22px;
+  color: rgba(240,242,250,0.6);
+  text-align: center;
+  font-weight: 500;
+  font-style: italic;
+  line-height: 1.6;
+  max-width: 700px;
+  margin-bottom: 10px;
+}
+
+.quote-text strong {
+  color: #D4A843;
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* VHS scanline effect */
+.scanlines {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0,0,0,0.03) 3px,
+    rgba(0,0,0,0.03) 4px
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Film grain overlay */
+.grain {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* Synchro summoning rings */
+.synchro-ring {
+  position: absolute;
+  border-radius: 50%;
+  z-index: 0;
+}
+.synchro-ring:nth-of-type(1) {
+  width: 500px; height: 500px;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  border: 2px solid rgba(212,168,67,0.08);
+}
+.synchro-ring:nth-of-type(2) {
+  width: 650px; height: 650px;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  border: 1.5px solid rgba(212,168,67,0.05);
+}
+.synchro-ring:nth-of-type(3) {
+  width: 800px; height: 800px;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(212,168,67,0.03);
+}
+
+/* Star dots around the rings */
+.star-dot-abs {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: rgba(212,168,67,0.3);
+  border-radius: 50%;
+  z-index: 0;
+}
+
+.cta-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+  color: rgba(240,242,250,0.5);
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-top: auto;
+  margin-bottom: 6px;
+}
+
+.bottom-url {
+  font-family: 'Inter', sans-serif;
+  font-size: 28px;
+  color: rgba(240,242,250,0.5);
+  letter-spacing: 3px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+</style>
+</head>
+<body>
+  <div class="bg-year">2010</div>
+
+  <div class="synchro-ring"></div>
+  <div class="synchro-ring"></div>
+  <div class="synchro-ring"></div>
+
+  <!-- Scattered star dots -->
+  <div class="star-dot-abs" style="top:180px;left:120px;"></div>
+  <div class="star-dot-abs" style="top:200px;right:150px;"></div>
+  <div class="star-dot-abs" style="bottom:220px;left:100px;"></div>
+  <div class="star-dot-abs" style="bottom:250px;right:130px;"></div>
+  <div class="star-dot-abs" style="top:400px;left:50px;width:4px;height:4px;"></div>
+  <div class="star-dot-abs" style="top:450px;right:60px;width:4px;height:4px;"></div>
+  <div class="star-dot-abs" style="bottom:350px;left:70px;width:5px;height:5px;"></div>
+  <div class="star-dot-abs" style="bottom:380px;right:80px;width:5px;height:5px;"></div>
+
+  <div class="scanlines"></div>
+
+  <div class="container">
+    <img src="../../public/logo.png" alt="702ManyCards" class="logo">
+
+    <div class="edison-badge">
+      <div class="badge-dot"></div>
+      <span>Edison Format</span>
+      <div class="badge-dot"></div>
+    </div>
+
+    <div class="main-title">The Golden<br>Era</div>
+    <div class="main-subtitle">March 2010 Format</div>
+    <div class="divider"></div>
+
+    <div class="nostalgia-items">
+      <div class="nostalgia-row">
+        <div class="memory-tag gold">Synchro Summoning</div>
+        <div class="memory-tag cyan">Skill-Based Duels</div>
+      </div>
+      <div class="nostalgia-row">
+        <div class="memory-tag warm">Deep Card Pool</div>
+        <div class="memory-tag gold">Creative Plays</div>
+        <div class="memory-tag cyan">Balanced Format</div>
+      </div>
+      <div class="nostalgia-row">
+        <div class="memory-tag warm">Peak Yu-Gi-Oh!</div>
+        <div class="memory-tag gold">Chess-Like Duels</div>
+      </div>
+    </div>
+
+    <div class="quote-text">
+      The format that rewarded <strong>skill above everything else</strong>.<br>
+      The community keeps it alive.
+    </div>
+
+    <div class="cta-text">Relive the golden era at</div>
+    <div class="bottom-url">702manycards.com</div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080, initial-scale=1">
+<title>702ManyCards - Nostalgia</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700;900&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  width: 1080px;
+  height: 1080px;
+  margin: 0;
+  overflow: hidden;
+  background: linear-gradient(160deg, #0D0F1A 0%, #1A1510 40%, #2A1F12 70%, #1A1510 100%);
+  font-family: 'Inter', sans-serif;
+  position: relative;
+}
+
+/* Vintage card frame silhouettes */
+.vintage-card {
+  position: absolute;
+  border: 2px solid rgba(212,168,67,0.08);
+  border-radius: 8px;
+  background: rgba(212,168,67,0.02);
+  z-index: 0;
+}
+
+.vintage-card::before {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  right: 10%;
+  height: 40%;
+  border: 1px solid rgba(212,168,67,0.06);
+  border-radius: 3px;
+}
+
+.vintage-card:nth-child(1) { width: 180px; height: 260px; top: 60px; left: 40px; transform: rotate(-12deg); }
+.vintage-card:nth-child(2) { width: 180px; height: 260px; top: 40px; right: 50px; transform: rotate(10deg); }
+.vintage-card:nth-child(3) { width: 150px; height: 220px; bottom: 100px; left: 60px; transform: rotate(6deg); }
+.vintage-card:nth-child(4) { width: 150px; height: 220px; bottom: 80px; right: 40px; transform: rotate(-8deg); }
+.vintage-card:nth-child(5) { width: 120px; height: 180px; top: 350px; left: 20px; transform: rotate(-20deg); opacity: 0.5; }
+.vintage-card:nth-child(6) { width: 120px; height: 180px; top: 380px; right: 30px; transform: rotate(18deg); opacity: 0.5; }
+
+/* Warm ambient glow */
+.warm-glow {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212,168,67,0.06) 0%, transparent 70%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 90px;
+}
+
+.main-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 68px;
+  color: #F0F2FA;
+  text-align: center;
+  line-height: 1.2;
+  font-weight: 900;
+  margin-bottom: 40px;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+}
+
+.main-text em {
+  color: #D4A843;
+  font-style: italic;
+}
+
+.comment-cta {
+  font-size: 40px;
+  color: rgba(240,242,250,0.7);
+  text-align: center;
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+.divider {
+  width: 120px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #D4A843, transparent);
+  margin: 30px 0;
+}
+
+/* Logo watermark */
+.logo-watermark {
+  position: absolute;
+  bottom: 50px;
+  right: 50px;
+  width: 140px;
+  height: auto;
+  opacity: 0.4;
+}
+
+.bottom-url {
+  position: absolute;
+  bottom: 55px;
+  left: 60px;
+  font-family: 'Inter', sans-serif;
+  font-size: 24px;
+  color: rgba(240,242,250,0.35);
+  letter-spacing: 2px;
+  font-weight: 600;
+}
+</style>
+</head>
+<body>
+  <div class="vintage-card"></div>
+  <div class="vintage-card"></div>
+  <div class="vintage-card"></div>
+  <div class="vintage-card"></div>
+  <div class="vintage-card"></div>
+  <div class="vintage-card"></div>
+  <div class="warm-glow"></div>
+
+  <div class="container">
+    <div class="main-text">What was the<br><em>first card</em><br>you ever pulled?</div>
+    <div class="divider"></div>
+    <div class="comment-cta">Drop it in the comments &#128071;</div>
+  </div>
+
+  <img src="../../public/logo.png" alt="702ManyCards" class="logo-watermark">
+  <div class="bottom-url">702manycards.com</div>
+</body>
+</html>

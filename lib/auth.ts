@@ -1,10 +1,7 @@
 import { createHmac } from "crypto";
-import fs from "fs";
-import path from "path";
 
 export const COOKIE_NAME = "702mc_admin_session";
 const TOKEN_MAX_AGE_MS = 24 * 60 * 60 * 1000; // 24 hours
-const TEAM_FILE = path.join(process.cwd(), "data", "team.json");
 
 export type AdminRole = "owner" | "editor" | "viewer";
 
@@ -13,6 +10,7 @@ export interface AdminUser {
   password: string;
   role: AdminRole;
   createdAt?: string;
+  displayName?: string;
 }
 
 function getSecret(): string {
@@ -23,7 +21,7 @@ function sign(payload: string): string {
   return createHmac("sha256", getSecret()).update(payload).digest("hex");
 }
 
-// Default admin users — used as fallback when data/team.json is not accessible (e.g., Vercel serverless)
+// Default admin users — used as fallback when Supabase is unavailable
 const DEFAULT_ADMIN_USERS: AdminUser[] = [
   { username: "spencer", password: "702cards2026", role: "owner", createdAt: "2026-03-21" },
   { username: "Damien", password: "Admin123", role: "owner", createdAt: "2026-03-22" },
@@ -31,30 +29,107 @@ const DEFAULT_ADMIN_USERS: AdminUser[] = [
 ];
 
 /**
- * Get all admin users from data/team.json with hardcoded fallback.
+ * Get Supabase client for auth operations.
  */
-export function getAdminUsers(): AdminUser[] {
+async function getSupabase() {
   try {
-    const raw = fs.readFileSync(TEAM_FILE, "utf-8");
-    const users = JSON.parse(raw) as AdminUser[];
-    return users.length > 0 ? users : DEFAULT_ADMIN_USERS;
+    const { getServiceSupabase } = await import("@/lib/supabase");
+    return getServiceSupabase();
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Get all admin users from Supabase with hardcoded fallback.
+ */
+export async function getAdminUsers(): Promise<AdminUser[]> {
+  try {
+    const supabase = await getSupabase();
+    if (!supabase) return DEFAULT_ADMIN_USERS;
+
+    const { data, error } = await supabase
+      .from("team")
+      .select("username, password_hash, display_name, role, created_at")
+      .order("created_at", { ascending: true });
+
+    if (error || !data || data.length === 0) return DEFAULT_ADMIN_USERS;
+
+    return data.map((row: Record<string, string>) => ({
+      username: row.username,
+      password: row.password_hash,
+      role: row.role as AdminRole,
+      createdAt: row.created_at?.split("T")[0] || "",
+      displayName: row.display_name || row.username,
+    }));
   } catch {
     return DEFAULT_ADMIN_USERS;
   }
 }
 
 /**
- * Write admin users to data/team.json.
+ * Add a team member to Supabase.
  */
-export function writeAdminUsers(users: AdminUser[]): void {
-  fs.writeFileSync(TEAM_FILE, JSON.stringify(users, null, 2), "utf-8");
+export async function addTeamMember(username: string, password: string, role: AdminRole, displayName?: string): Promise<boolean> {
+  try {
+    const supabase = await getSupabase();
+    if (!supabase) return false;
+
+    const { error } = await supabase.from("team").insert({
+      id: crypto.randomUUID(),
+      username,
+      password_hash: password,
+      display_name: displayName || username,
+      role,
+      created_at: new Date().toISOString(),
+    });
+
+    return !error;
+  } catch {
+    return false;
+  }
 }
 
 /**
- * Validate credentials against the team member list.
+ * Remove a team member from Supabase.
  */
-export function validateCredentials(username: string, password: string): AdminUser | null {
-  const users = getAdminUsers();
+export async function removeTeamMember(username: string): Promise<boolean> {
+  try {
+    const supabase = await getSupabase();
+    if (!supabase) return false;
+
+    const { error } = await supabase.from("team").delete().eq("username", username);
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Update a team member in Supabase.
+ */
+export async function updateTeamMember(username: string, updates: { password?: string; role?: AdminRole; displayName?: string }): Promise<boolean> {
+  try {
+    const supabase = await getSupabase();
+    if (!supabase) return false;
+
+    const updateData: Record<string, string> = {};
+    if (updates.password) updateData.password_hash = updates.password;
+    if (updates.role) updateData.role = updates.role;
+    if (updates.displayName) updateData.display_name = updates.displayName;
+
+    const { error } = await supabase.from("team").update(updateData).eq("username", username);
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Validate credentials against Supabase team table.
+ */
+export async function validateCredentials(username: string, password: string): Promise<AdminUser | null> {
+  const users = await getAdminUsers();
   // Case-insensitive username match, exact password match
   return users.find((u) => u.username.toLowerCase() === username.toLowerCase() && u.password === password) || null;
 }

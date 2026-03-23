@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080, initial-scale=1">
+<title>702ManyCards - Condition Grading</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700;900&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  width: 1080px;
+  height: 1080px;
+  margin: 0;
+  overflow: hidden;
+  background: #0D0F1A;
+  font-family: 'Inter', sans-serif;
+  position: relative;
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 50px 80px;
+}
+
+.logo {
+  width: 180px;
+  height: auto;
+  margin-bottom: 25px;
+}
+
+.main-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 80px;
+  color: #FFFFFF;
+  text-align: center;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+
+.sub-label {
+  font-size: 26px;
+  color: #00BCD4;
+  font-weight: 600;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  margin-bottom: 40px;
+}
+
+/* Magnifying glass icon */
+.mag-glass {
+  position: absolute;
+  top: 60px;
+  right: 80px;
+  width: 80px;
+  height: 80px;
+  z-index: 2;
+}
+
+.mag-glass::before {
+  content: '';
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(0,188,212,0.5);
+  border-radius: 50%;
+  top: 0;
+  left: 0;
+}
+
+.mag-glass::after {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 30px;
+  background: rgba(0,188,212,0.5);
+  bottom: 0;
+  right: 8px;
+  transform: rotate(-45deg);
+  border-radius: 2px;
+}
+
+/* Condition bars */
+.grades {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 24px;
+}
+
+.grade-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.grade-label {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 48px;
+  color: #F0F2FA;
+  width: 100px;
+  text-align: right;
+}
+
+.grade-bar-bg {
+  flex: 1;
+  height: 50px;
+  background: rgba(240,242,250,0.08);
+  border-radius: 25px;
+  overflow: hidden;
+  position: relative;
+}
+
+.grade-bar-fill {
+  height: 100%;
+  border-radius: 25px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 20px;
+}
+
+.grade-percent {
+  font-size: 22px;
+  font-weight: 700;
+  color: rgba(0,0,0,0.6);
+}
+
+.grade-name {
+  font-size: 24px;
+  color: rgba(240,242,250,0.5);
+  font-weight: 600;
+  width: 200px;
+}
+
+/* Condition colors */
+.fill-nm { width: 100%; background: linear-gradient(90deg, #43A047, #66BB6A); }
+.fill-lp { width: 85%; background: linear-gradient(90deg, #7CB342, #9CCC65); }
+.fill-mp { width: 70%; background: linear-gradient(90deg, #FDD835, #FFEE58); }
+.fill-hp { width: 55%; background: linear-gradient(90deg, #FB8C00, #FFA726); }
+.fill-dmg { width: 40%; background: linear-gradient(90deg, #E53935, #EF5350); }
+
+.bottom-text {
+  font-size: 30px;
+  color: #D4A843;
+  font-weight: 700;
+  text-align: center;
+  margin-top: 30px;
+  letter-spacing: 2px;
+}
+
+.bottom-url {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Inter', sans-serif;
+  font-size: 26px;
+  color: rgba(240,242,250,0.5);
+  letter-spacing: 3px;
+  font-weight: 600;
+}
+</style>
+</head>
+<body>
+  <div class="container">
+    <img src="../../public/logo.png" alt="702ManyCards" class="logo">
+
+    <div class="main-text">WHAT YOU SEE IS<br>WHAT YOU GET</div>
+    <div class="sub-label">Honest Card Grading</div>
+
+    <div class="mag-glass"></div>
+
+    <div class="grades">
+      <div class="grade-row">
+        <div class="grade-label">NM</div>
+        <div class="grade-bar-bg">
+          <div class="grade-bar-fill fill-nm"><span class="grade-percent">100%</span></div>
+        </div>
+        <div class="grade-name">Near Mint</div>
+      </div>
+      <div class="grade-row">
+        <div class="grade-label">LP</div>
+        <div class="grade-bar-bg">
+          <div class="grade-bar-fill fill-lp"><span class="grade-percent">85%</span></div>
+        </div>
+        <div class="grade-name">Lightly Played</div>
+      </div>
+      <div class="grade-row">
+        <div class="grade-label">MP</div>
+        <div class="grade-bar-bg">
+          <div class="grade-bar-fill fill-mp"><span class="grade-percent">70%</span></div>
+        </div>
+        <div class="grade-name">Moderately Played</div>
+      </div>
+      <div class="grade-row">
+        <div class="grade-label">HP</div>
+        <div class="grade-bar-bg">
+          <div class="grade-bar-fill fill-hp"><span class="grade-percent">55%</span></div>
+        </div>
+        <div class="grade-name">Heavily Played</div>
+      </div>
+      <div class="grade-row">
+        <div class="grade-label">DMG</div>
+        <div class="grade-bar-bg">
+          <div class="grade-bar-fill fill-dmg"><span class="grade-percent">40%</span></div>
+        </div>
+        <div class="grade-name">Damaged</div>
+      </div>
+    </div>
+
+    <div class="bottom-text">Every card graded honestly</div>
+  </div>
+
+  <div class="bottom-url">702manycards.com</div>
+</body>
+</html>

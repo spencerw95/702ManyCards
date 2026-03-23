@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
-import { getAdminUsers, writeAdminUsers, getUserFromCookies } from "@/lib/auth";
+import { getAdminUsers, addTeamMember, updateTeamMember, removeTeamMember, getUserFromCookies } from "@/lib/auth";
 import type { AdminRole } from "@/lib/auth";
-import { logActivity } from "@/lib/activity-log";
 
 /**
  * GET: Return all team members (passwords hidden).
  */
-export async function GET(request: Request) {
+export async function GET() {
   const currentUser = await getUserFromCookies();
   if (!currentUser || currentUser.role !== "owner") {
     return NextResponse.json(
@@ -15,8 +14,9 @@ export async function GET(request: Request) {
     );
   }
 
-  const users = getAdminUsers().map((u) => ({
+  const users = (await getAdminUsers()).map((u) => ({
     username: u.username,
+    displayName: u.displayName || u.username,
     role: u.role,
     createdAt: u.createdAt,
   }));
@@ -69,25 +69,21 @@ export async function POST(request: Request) {
       );
     }
 
-    const users = getAdminUsers();
-
-    if (users.find((u) => u.username === username)) {
+    const users = await getAdminUsers();
+    if (users.find((u) => u.username.toLowerCase() === username.toLowerCase())) {
       return NextResponse.json(
         { success: false, error: "Username already exists" },
         { status: 409 }
       );
     }
 
-    users.push({
-      username,
-      password,
-      role,
-      createdAt: new Date().toISOString().split("T")[0],
-    });
-
-    writeAdminUsers(users);
-
-    logActivity("login", currentUser.username, `Added team member "${username}" (${role})`);
+    const success = await addTeamMember(username, password, role);
+    if (!success) {
+      return NextResponse.json(
+        { success: false, error: "Failed to add team member" },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json(
       { success: true, user: { username, role } },
@@ -124,24 +120,11 @@ export async function PUT(request: Request) {
       );
     }
 
-    const users = getAdminUsers();
-    const index = users.findIndex((u) => u.username === username);
-
-    if (index === -1) {
+    if (password && password.length < 6) {
       return NextResponse.json(
-        { success: false, error: "User not found" },
-        { status: 404 }
+        { success: false, error: "Password must be at least 6 characters" },
+        { status: 400 }
       );
-    }
-
-    if (password) {
-      if (password.length < 6) {
-        return NextResponse.json(
-          { success: false, error: "Password must be at least 6 characters" },
-          { status: 400 }
-        );
-      }
-      users[index].password = password;
     }
 
     if (role) {
@@ -152,16 +135,15 @@ export async function PUT(request: Request) {
           { status: 400 }
         );
       }
-      users[index].role = role;
     }
 
-    writeAdminUsers(users);
-
-    const changes = [];
-    if (password) changes.push("password");
-    if (role) changes.push(`role to ${role}`);
-
-    logActivity("login", currentUser.username, `Updated team member "${username}" (${changes.join(", ")})`);
+    const success = await updateTeamMember(username, { password, role });
+    if (!success) {
+      return NextResponse.json(
+        { success: false, error: "Failed to update team member" },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({ success: true });
   } catch {
@@ -194,7 +176,6 @@ export async function DELETE(request: Request) {
     );
   }
 
-  // Can't delete yourself
   if (username === currentUser.username) {
     return NextResponse.json(
       { success: false, error: "You cannot remove yourself" },
@@ -202,21 +183,13 @@ export async function DELETE(request: Request) {
     );
   }
 
-  const users = getAdminUsers();
-  const index = users.findIndex((u) => u.username === username);
-
-  if (index === -1) {
+  const success = await removeTeamMember(username);
+  if (!success) {
     return NextResponse.json(
-      { success: false, error: "User not found" },
-      { status: 404 }
+      { success: false, error: "Failed to remove team member" },
+      { status: 500 }
     );
   }
-
-  const removed = users[index];
-  users.splice(index, 1);
-  writeAdminUsers(users);
-
-  logActivity("login", currentUser.username, `Removed team member "${removed.username}" (was ${removed.role})`);
 
   return NextResponse.json({ success: true });
 }

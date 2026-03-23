@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080, initial-scale=1">
+<title>702ManyCards - Yu-Gi-Oh! Fresh Drops</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  width: 1080px;
+  height: 1080px;
+  margin: 0;
+  overflow: hidden;
+  background: #0D0F1A;
+  font-family: 'Inter', sans-serif;
+  position: relative;
+}
+
+/* Grid pattern */
+body::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image:
+    linear-gradient(rgba(0,188,212,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,188,212,0.06) 1px, transparent 1px);
+  background-size: 60px 60px;
+  z-index: 0;
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+}
+
+.logo {
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 220px;
+  height: auto;
+}
+
+/* Card silhouettes */
+.card-shape {
+  position: absolute;
+  border: 2px solid rgba(0,188,212,0.12);
+  border-radius: 8px;
+  background: rgba(0,188,212,0.03);
+}
+.card-shape:nth-child(1) { width: 140px; height: 200px; top: 120px; left: 80px; transform: rotate(-15deg); }
+.card-shape:nth-child(2) { width: 140px; height: 200px; top: 100px; right: 100px; transform: rotate(12deg); }
+.card-shape:nth-child(3) { width: 120px; height: 170px; bottom: 180px; left: 60px; transform: rotate(8deg); }
+.card-shape:nth-child(4) { width: 120px; height: 170px; bottom: 200px; right: 70px; transform: rotate(-10deg); }
+.card-shape:nth-child(5) { width: 100px; height: 140px; top: 350px; left: 30px; transform: rotate(-25deg); opacity: 0.5; }
+.card-shape:nth-child(6) { width: 100px; height: 140px; top: 380px; right: 40px; transform: rotate(20deg); opacity: 0.5; }
+
+.main-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 140px;
+  color: #FFFFFF;
+  text-align: center;
+  line-height: 1;
+  text-shadow:
+    0 0 20px rgba(0,188,212,0.8),
+    0 0 40px rgba(0,188,212,0.5),
+    0 0 80px rgba(0,188,212,0.3);
+  animation: glow 3s ease-in-out infinite alternate;
+  margin-bottom: 20px;
+}
+
+@keyframes glow {
+  from { text-shadow: 0 0 20px rgba(0,188,212,0.8), 0 0 40px rgba(0,188,212,0.5), 0 0 80px rgba(0,188,212,0.3); }
+  to { text-shadow: 0 0 30px rgba(0,188,212,1), 0 0 60px rgba(0,188,212,0.7), 0 0 100px rgba(0,188,212,0.4); }
+}
+
+.sub-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 42px;
+  color: #D4A843;
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+.divider {
+  width: 200px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #00BCD4, transparent);
+  margin: 30px 0;
+}
+
+.bottom-url {
+  position: absolute;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Inter', sans-serif;
+  font-size: 28px;
+  color: rgba(240,242,250,0.6);
+  letter-spacing: 3px;
+  font-weight: 600;
+}
+</style>
+</head>
+<body>
+  <div class="card-shape"></div>
+  <div class="card-shape"></div>
+  <div class="card-shape"></div>
+  <div class="card-shape"></div>
+  <div class="card-shape"></div>
+  <div class="card-shape"></div>
+
+  <div class="container">
+    <img src="../../public/logo.png" alt="702ManyCards" class="logo">
+
+    <div class="main-text">FRESH<br>DROPS</div>
+    <div class="divider"></div>
+    <div class="sub-text">Yu-Gi-Oh! Singles<br>Now Available</div>
+  </div>
+
+  <div class="bottom-url">702manycards.com</div>
+</body>
+</html>

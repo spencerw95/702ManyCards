@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080, initial-scale=1">
+<title>702ManyCards - Competitive Pricing</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700;900&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  width: 1080px;
+  height: 1080px;
+  margin: 0;
+  overflow: hidden;
+  background: #0D0F1A;
+  font-family: 'Inter', sans-serif;
+  position: relative;
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 50px 70px;
+}
+
+.logo {
+  width: 180px;
+  height: auto;
+  margin-bottom: 30px;
+}
+
+.main-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 100px;
+  color: #FFFFFF;
+  text-align: center;
+  line-height: 1;
+  text-shadow: 0 0 20px rgba(0,188,212,0.5);
+}
+
+.sub-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 34px;
+  color: #00BCD4;
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 8px;
+  text-transform: uppercase;
+  margin-top: 5px;
+  margin-bottom: 40px;
+}
+
+/* Price comparison card */
+.price-card {
+  background: #1A1D30;
+  border-radius: 16px;
+  padding: 35px 50px;
+  width: 100%;
+  margin-bottom: 35px;
+  border: 1px solid rgba(0,188,212,0.15);
+}
+
+.price-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.price-row:last-child { margin-bottom: 0; }
+
+.price-label {
+  font-size: 28px;
+  color: rgba(240,242,250,0.6);
+  font-weight: 600;
+}
+
+.price-market {
+  font-size: 36px;
+  color: rgba(240,242,250,0.4);
+  text-decoration: line-through;
+  font-weight: 700;
+}
+
+.price-arrow {
+  font-size: 36px;
+  color: #00BCD4;
+  margin: 0 20px;
+}
+
+.price-ours {
+  font-size: 44px;
+  color: #4CAF50;
+  font-weight: 900;
+}
+
+.save-badge {
+  display: inline-block;
+  background: #4CAF50;
+  color: #FFFFFF;
+  font-size: 20px;
+  font-weight: 700;
+  padding: 6px 16px;
+  border-radius: 20px;
+  margin-left: 15px;
+}
+
+/* Bar chart */
+.chart {
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 10px;
+  flex: 1;
+  padding-bottom: 40px;
+}
+
+.chart-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.chart-bar-wrap {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  height: 260px;
+}
+
+.chart-bar {
+  width: 70px;
+  border-radius: 8px 8px 0 0;
+  position: relative;
+}
+
+.bar-market {
+  background: linear-gradient(to top, rgba(240,242,250,0.15), rgba(240,242,250,0.25));
+  height: 240px;
+}
+
+.bar-ours {
+  background: linear-gradient(to top, #00BCD4, #00E5FF);
+  box-shadow: 0 0 20px rgba(0,188,212,0.4);
+}
+
+.bar-ours-1 { height: 190px; }
+.bar-ours-2 { height: 160px; }
+.bar-ours-3 { height: 130px; }
+
+.bar-market-1 { height: 240px; }
+.bar-market-2 { height: 210px; }
+.bar-market-3 { height: 180px; }
+
+.chart-label {
+  font-size: 22px;
+  color: rgba(240,242,250,0.5);
+  font-weight: 600;
+}
+
+.chart-legend {
+  display: flex;
+  gap: 40px;
+  margin-top: 5px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 20px;
+  color: rgba(240,242,250,0.6);
+  font-weight: 600;
+}
+
+.legend-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+}
+
+.legend-dot.market { background: rgba(240,242,250,0.2); }
+.legend-dot.ours { background: #00BCD4; }
+
+.bottom-url {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Inter', sans-serif;
+  font-size: 26px;
+  color: rgba(240,242,250,0.5);
+  letter-spacing: 3px;
+  font-weight: 600;
+}
+</style>
+</head>
+<body>
+  <div class="container">
+    <img src="../../public/logo.png" alt="702ManyCards" class="logo">
+
+    <div class="main-text">LIVE MARKET PRICES</div>
+    <div class="sub-text">on every card</div>
+
+    <div class="price-card">
+      <div class="price-row">
+        <div class="price-label">Market Price</div>
+        <div style="display:flex;align-items:center;">
+          <div class="price-market">$24.99</div>
+          <div class="price-arrow">&rarr;</div>
+          <div class="price-ours">$19.99</div>
+          <div class="save-badge">SAVE 20%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart">
+      <div class="chart-col">
+        <div class="chart-bar-wrap">
+          <div class="chart-bar bar-market bar-market-1"></div>
+          <div class="chart-bar bar-ours bar-ours-1"></div>
+        </div>
+        <div class="chart-label">Card A</div>
+      </div>
+      <div class="chart-col">
+        <div class="chart-bar-wrap">
+          <div class="chart-bar bar-market bar-market-2"></div>
+          <div class="chart-bar bar-ours bar-ours-2"></div>
+        </div>
+        <div class="chart-label">Card B</div>
+      </div>
+      <div class="chart-col">
+        <div class="chart-bar-wrap">
+          <div class="chart-bar bar-market bar-market-3"></div>
+          <div class="chart-bar bar-ours bar-ours-3"></div>
+        </div>
+        <div class="chart-label">Card C</div>
+      </div>
+    </div>
+
+    <div class="chart-legend">
+      <div class="legend-item"><div class="legend-dot market"></div> Market</div>
+      <div class="legend-item"><div class="legend-dot ours"></div> 702ManyCards</div>
+    </div>
+  </div>
+
+  <div class="bottom-url">702manycards.com</div>
+</body>
+</html>

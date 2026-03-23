@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080, initial-scale=1">
+<title>702ManyCards - Edison On A Budget</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Oswald:wght@400;500;600;700&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  width: 1080px;
+  height: 1080px;
+  margin: 0;
+  overflow: hidden;
+  background: #0D0F1A;
+  font-family: 'Inter', sans-serif;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image:
+    linear-gradient(rgba(212,168,67,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(212,168,67,0.04) 1px, transparent 1px);
+  background-size: 54px 54px;
+  z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: absolute;
+  top: 55%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px;
+  height: 600px;
+  background: radial-gradient(ellipse, rgba(56,180,80,0.06) 0%, transparent 60%);
+  z-index: 0;
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 60px;
+}
+
+.logo {
+  width: 170px;
+  height: auto;
+  margin-bottom: 16px;
+}
+
+.edison-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, rgba(212,168,67,0.2), rgba(212,168,67,0.08));
+  border: 1.5px solid rgba(212,168,67,0.5);
+  border-radius: 8px;
+  padding: 8px 24px;
+  margin-bottom: 22px;
+}
+
+.edison-badge span {
+  font-family: 'Oswald', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: #D4A843;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+.badge-dot {
+  width: 8px;
+  height: 8px;
+  background: #D4A843;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(212,168,67,0.6);
+}
+
+.main-title {
+  font-family: 'Oswald', sans-serif;
+  font-size: 80px;
+  font-weight: 700;
+  color: #F0F2FA;
+  text-align: center;
+  line-height: 1;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  text-shadow: 0 0 25px rgba(0,188,212,0.3);
+}
+
+.main-subtitle {
+  font-family: 'Oswald', sans-serif;
+  font-size: 48px;
+  font-weight: 500;
+  color: #D4A843;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  margin-bottom: 30px;
+  text-shadow: 0 0 20px rgba(212,168,67,0.4);
+}
+
+.divider {
+  width: 120px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #D4A843, transparent);
+  margin-bottom: 30px;
+}
+
+/* Price comparison */
+.comparison {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  margin-bottom: 35px;
+}
+
+.price-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 40px;
+  border-radius: 16px;
+  width: 340px;
+}
+
+.price-card.modern {
+  background: linear-gradient(135deg, rgba(180,50,50,0.12), rgba(180,50,50,0.04));
+  border: 1.5px solid rgba(180,50,50,0.3);
+}
+
+.price-card.edison {
+  background: linear-gradient(135deg, rgba(56,180,80,0.12), rgba(56,180,80,0.04));
+  border: 2px solid rgba(56,180,80,0.5);
+  box-shadow: 0 0 30px rgba(56,180,80,0.1);
+}
+
+.price-label {
+  font-family: 'Oswald', sans-serif;
+  font-size: 26px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  margin-bottom: 12px;
+}
+
+.price-card.modern .price-label { color: rgba(200,80,80,0.8); }
+.price-card.edison .price-label { color: rgba(80,200,100,0.9); }
+
+.price-amount {
+  font-family: 'Oswald', sans-serif;
+  font-size: 72px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.price-card.modern .price-amount {
+  color: rgba(200,80,80,0.6);
+  text-decoration: line-through;
+  text-decoration-thickness: 4px;
+}
+
+.price-card.edison .price-amount {
+  color: #38B450;
+  text-shadow: 0 0 20px rgba(56,180,80,0.4);
+}
+
+.price-desc {
+  font-family: 'Inter', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: rgba(240,242,250,0.5);
+  text-align: center;
+}
+
+.vs-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(212,168,67,0.15);
+  border: 2px solid rgba(212,168,67,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Oswald', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #D4A843;
+  flex-shrink: 0;
+}
+
+/* Feature tags */
+.features {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+.feature-tag {
+  padding: 10px 24px;
+  border-radius: 30px;
+  font-family: 'Inter', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.feature-tag:nth-child(1) {
+  background: rgba(0,188,212,0.12);
+  border: 1px solid rgba(0,188,212,0.3);
+  color: #00BCD4;
+}
+.feature-tag:nth-child(2) {
+  background: rgba(212,168,67,0.12);
+  border: 1px solid rgba(212,168,67,0.3);
+  color: #D4A843;
+}
+.feature-tag:nth-child(3) {
+  background: rgba(56,180,80,0.12);
+  border: 1px solid rgba(56,180,80,0.3);
+  color: #38B450;
+}
+
+.cta-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+  color: rgba(240,242,250,0.6);
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-top: auto;
+  margin-bottom: 6px;
+}
+
+.bottom-url {
+  font-family: 'Inter', sans-serif;
+  font-size: 28px;
+  color: rgba(240,242,250,0.5);
+  letter-spacing: 3px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+/* Decorative arrows */
+.arrow-down {
+  position: absolute;
+  z-index: 0;
+  font-size: 80px;
+  color: rgba(56,180,80,0.08);
+}
+.arrow-down:nth-of-type(1) { top: 200px; left: 40px; }
+.arrow-down:nth-of-type(2) { top: 250px; right: 50px; transform: rotate(10deg); }
+.arrow-down:nth-of-type(3) { bottom: 250px; left: 30px; font-size: 60px; }
+
+.synchro-ring {
+  position: absolute;
+  border: 1.5px solid rgba(212,168,67,0.06);
+  border-radius: 50%;
+  z-index: 0;
+}
+.synchro-ring:nth-of-type(1) { width: 300px; height: 300px; top: -100px; right: -80px; }
+.synchro-ring:nth-of-type(2) { width: 200px; height: 200px; bottom: -60px; left: -60px; }
+</style>
+</head>
+<body>
+  <div class="synchro-ring"></div>
+  <div class="synchro-ring"></div>
+  <div class="arrow-down">&#8595;</div>
+  <div class="arrow-down">&#8595;</div>
+  <div class="arrow-down">&#8595;</div>
+
+  <div class="container">
+    <img src="../../public/logo.png" alt="702ManyCards" class="logo">
+
+    <div class="edison-badge">
+      <div class="badge-dot"></div>
+      <span>Edison Format</span>
+      <div class="badge-dot"></div>
+    </div>
+
+    <div class="main-title">Edison</div>
+    <div class="main-subtitle">On A Budget</div>
+    <div class="divider"></div>
+
+    <div class="comparison">
+      <div class="price-card modern">
+        <div class="price-label">Modern YGO</div>
+        <div class="price-amount">$$$</div>
+        <div class="price-desc">Expensive staples<br>Constant reprints</div>
+      </div>
+      <div class="vs-circle">VS</div>
+      <div class="price-card edison">
+        <div class="price-label">Edison Format</div>
+        <div class="price-amount">$</div>
+        <div class="price-desc">Affordable staples<br>Stable card pool</div>
+      </div>
+    </div>
+
+    <div class="features">
+      <div class="feature-tag">Tournament-Ready</div>
+      <div class="feature-tag">Competitive Prices</div>
+      <div class="feature-tag">Affordable</div>
+    </div>
+
+    <div class="cta-text">Build your deck without breaking the bank</div>
+    <div class="bottom-url">702manycards.com</div>
+  </div>
+</body>
+</html>

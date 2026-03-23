@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080, initial-scale=1">
+<title>702ManyCards - Sell Your Cards</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700;900&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  width: 1080px;
+  height: 1080px;
+  margin: 0;
+  overflow: hidden;
+  background: #0D0F1A;
+  font-family: 'Inter', sans-serif;
+  position: relative;
+}
+
+/* Two-tone split */
+.split-left {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(135deg, #0D0F1A 0%, #141729 100%);
+}
+
+.split-right {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(212,168,67,0.12) 0%, rgba(212,168,67,0.05) 100%);
+}
+
+/* Diagonal divider */
+.split-divider {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(to bottom, transparent 10%, rgba(212,168,67,0.4) 30%, rgba(212,168,67,0.4) 70%, transparent 90%);
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+.container {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+}
+
+.logo {
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: auto;
+}
+
+.icons-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+
+/* Card icon */
+.card-icon {
+  width: 140px;
+  height: 200px;
+  border: 3px solid rgba(0,188,212,0.6);
+  border-radius: 10px;
+  background: rgba(0,188,212,0.05);
+  position: relative;
+  box-shadow: 0 0 20px rgba(0,188,212,0.2);
+}
+
+.card-icon::before {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  right: 15px;
+  height: 80px;
+  background: rgba(0,188,212,0.1);
+  border-radius: 4px;
+}
+
+/* Arrow */
+.arrow {
+  font-size: 70px;
+  color: #D4A843;
+  text-shadow: 0 0 15px rgba(212,168,67,0.5);
+  animation: arrowPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes arrowPulse {
+  0%, 100% { transform: translateX(0); opacity: 0.7; }
+  50% { transform: translateX(10px); opacity: 1; }
+}
+
+/* Dollar icon */
+.dollar-icon {
+  width: 140px;
+  height: 140px;
+  border: 3px solid rgba(212,168,67,0.6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 90px;
+  color: #D4A843;
+  background: rgba(212,168,67,0.05);
+  box-shadow: 0 0 20px rgba(212,168,67,0.2);
+}
+
+.main-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 120px;
+  color: #FFFFFF;
+  text-align: center;
+  line-height: 1;
+  margin-bottom: 15px;
+}
+
+.game-list {
+  font-size: 30px;
+  color: #00BCD4;
+  font-weight: 700;
+  letter-spacing: 4px;
+  margin-bottom: 20px;
+}
+
+.game-list span {
+  color: rgba(240,242,250,0.3);
+  margin: 0 6px;
+}
+
+.tagline {
+  font-size: 32px;
+  color: #D4A843;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+
+.cta {
+  font-size: 28px;
+  color: #F0F2FA;
+  font-weight: 700;
+  padding: 16px 40px;
+  border: 2px solid #00BCD4;
+  border-radius: 8px;
+  background: rgba(0,188,212,0.08);
+  letter-spacing: 2px;
+}
+
+.bottom-url {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Inter', sans-serif;
+  font-size: 26px;
+  color: rgba(240,242,250,0.5);
+  letter-spacing: 3px;
+  font-weight: 600;
+}
+</style>
+</head>
+<body>
+  <div class="split-left"></div>
+  <div class="split-right"></div>
+  <div class="split-divider"></div>
+
+  <div class="container">
+    <img src="../../public/logo.png" alt="702ManyCards" class="logo">
+
+    <div class="icons-row">
+      <div class="card-icon"></div>
+      <div class="arrow">&#10132;</div>
+      <div class="dollar-icon">$</div>
+    </div>
+
+    <div class="main-text">WE BUY CARDS</div>
+    <div class="game-list">YU-GI-OH! <span>|</span> POKEMON <span>|</span> MTG</div>
+    <div class="tagline">Fair offers. Fast payment.</div>
+    <div class="cta">Submit at 702manycards.com</div>
+  </div>
+</body>
+</html>

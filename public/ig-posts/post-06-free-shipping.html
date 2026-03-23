@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080, initial-scale=1">
+<title>702ManyCards - Free Shipping</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700;900&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  width: 1080px;
+  height: 1080px;
+  margin: 0;
+  overflow: hidden;
+  background: #0D0F1A;
+  font-family: 'Inter', sans-serif;
+  position: relative;
+}
+
+/* Cyan accent section */
+.cyan-section {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 280px;
+  background: linear-gradient(to top, rgba(0,188,212,0.12), transparent);
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+}
+
+.logo {
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: auto;
+}
+
+/* CSS Shipping box */
+.box-icon {
+  position: relative;
+  width: 160px;
+  height: 130px;
+  margin-bottom: 40px;
+}
+
+.box-body {
+  position: absolute;
+  bottom: 0;
+  width: 160px;
+  height: 100px;
+  background: #1A1D30;
+  border: 3px solid #00BCD4;
+  border-radius: 4px;
+  box-shadow: 0 0 20px rgba(0,188,212,0.3);
+}
+
+.box-body::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px;
+  height: 100%;
+  background: #00BCD4;
+}
+
+.box-flap-left, .box-flap-right {
+  position: absolute;
+  top: 0;
+  width: 80px;
+  height: 35px;
+  border: 3px solid #00BCD4;
+  background: #1A1D30;
+}
+
+.box-flap-left {
+  left: 0;
+  border-radius: 4px 0 0 0;
+  transform-origin: bottom left;
+  transform: skewY(-10deg);
+}
+
+.box-flap-right {
+  right: 0;
+  border-radius: 0 4px 0 0;
+  transform-origin: bottom right;
+  transform: skewY(10deg);
+}
+
+/* Dotted trail */
+.dotted-trail {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 4px;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.dotted-trail::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(0,188,212,0.4) 0px,
+    rgba(0,188,212,0.4) 10px,
+    transparent 10px,
+    transparent 25px
+  );
+  animation: moveDots 3s linear infinite;
+}
+
+@keyframes moveDots {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(50%); }
+}
+
+.main-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 160px;
+  color: #FFFFFF;
+  text-align: center;
+  line-height: 0.95;
+  text-shadow:
+    0 0 20px rgba(0,188,212,0.6),
+    0 0 40px rgba(0,188,212,0.3);
+}
+
+.threshold {
+  font-family: 'Inter', sans-serif;
+  font-size: 52px;
+  color: #D4A843;
+  text-align: center;
+  font-weight: 700;
+  margin-top: 10px;
+}
+
+.threshold span {
+  color: #FFD700;
+  font-size: 60px;
+}
+
+.extra {
+  font-size: 28px;
+  color: rgba(240,242,250,0.5);
+  margin-top: 20px;
+  font-weight: 600;
+  letter-spacing: 3px;
+}
+
+.bottom-url {
+  position: absolute;
+  bottom: 45px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Inter', sans-serif;
+  font-size: 28px;
+  color: rgba(240,242,250,0.5);
+  letter-spacing: 3px;
+  font-weight: 600;
+}
+</style>
+</head>
+<body>
+  <div class="cyan-section"></div>
+  <div class="dotted-trail"></div>
+
+  <div class="container">
+    <img src="../../public/logo.png" alt="702ManyCards" class="logo">
+
+    <div class="box-icon">
+      <div class="box-flap-left"></div>
+      <div class="box-flap-right"></div>
+      <div class="box-body"></div>
+    </div>
+
+    <div class="main-text">FREE<br>SHIPPING</div>
+    <div class="threshold">on orders <span>$25+</span></div>
+    <div class="extra">FAST &amp; SECURE DELIVERY</div>
+  </div>
+
+  <div class="bottom-url">702manycards.com</div>
+</body>
+</html>

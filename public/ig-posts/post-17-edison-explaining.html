@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080, height=1080">
+<title>Post 17 — Edison Players Explaining Why 2010 Was Peak</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Oswald:wght@700&family=Bangers&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px;
+    height: 1080px;
+    background: #0D0F1A;
+    font-family: 'Inter', sans-serif;
+    color: #F0F2FA;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Header */
+  .header {
+    position: absolute;
+    top: 40px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-family: 'Bangers', cursive;
+    font-size: 44px;
+    color: #F0F2FA;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.6);
+    padding: 0 50px;
+    line-height: 1.2;
+  }
+
+  .header span {
+    color: #00BCD4;
+  }
+
+  /* Two panels */
+  .panels {
+    position: absolute;
+    top: 180px;
+    left: 40px;
+    right: 40px;
+    bottom: 120px;
+    display: flex;
+    gap: 20px;
+  }
+
+  .panel {
+    flex: 1;
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .panel.edison {
+    background: linear-gradient(180deg, rgba(0, 188, 212, 0.12) 0%, rgba(0, 188, 212, 0.04) 100%);
+    border: 2px solid rgba(0, 188, 212, 0.25);
+  }
+
+  .panel.friends {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
+    border: 2px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .panel-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 24px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 25px;
+  }
+
+  .panel.edison .panel-label { color: #00BCD4; }
+  .panel.friends .panel-label { color: #666; }
+
+  /* Edison player face - excited */
+  .face-excited {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #FFD93D, #F0C020);
+    position: relative;
+    margin-bottom: 20px;
+    box-shadow: 0 0 40px rgba(0, 188, 212, 0.3);
+    flex-shrink: 0;
+  }
+
+  .face-excited .eye {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: #333;
+    border-radius: 50%;
+    top: 42px;
+  }
+  .face-excited .eye.left { left: 34px; }
+  .face-excited .eye.right { right: 34px; }
+
+  .face-excited .mouth {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 55px;
+    height: 32px;
+    background: #333;
+    border-radius: 0 0 30px 30px;
+  }
+
+  .face-excited .eyebrow {
+    position: absolute;
+    width: 28px;
+    height: 5px;
+    background: #665500;
+    top: 28px;
+    border-radius: 3px;
+  }
+  .face-excited .eyebrow.left { left: 26px; transform: rotate(-10deg); }
+  .face-excited .eyebrow.right { right: 26px; transform: rotate(10deg); }
+
+  /* Arms */
+  .arms {
+    position: absolute;
+    width: 130px;
+    height: 130px;
+    top: 0;
+  }
+  .arm {
+    position: absolute;
+    width: 8px;
+    height: 50px;
+    background: #F0C020;
+    border-radius: 4px;
+    bottom: 10px;
+  }
+  .arm.left { left: -20px; transform: rotate(40deg); }
+  .arm.right { right: -20px; transform: rotate(-40deg); }
+
+  /* Speech bubbles - chaotic */
+  .bubble-container {
+    flex: 1;
+    position: relative;
+    width: 100%;
+  }
+
+  .speech-bubble {
+    position: absolute;
+    font-family: 'Bangers', cursive;
+    padding: 8px 14px;
+    border-radius: 8px;
+    white-space: nowrap;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+
+  .b1 {
+    top: 0; left: 5px;
+    font-size: 32px;
+    color: #0D0F1A;
+    background: #00BCD4;
+    transform: rotate(-3deg);
+  }
+  .b2 {
+    top: 55px; right: 0;
+    font-size: 24px;
+    color: #0D0F1A;
+    background: #D4A843;
+    transform: rotate(2deg);
+  }
+  .b3 {
+    top: 110px; left: -5px;
+    font-size: 28px;
+    color: #0D0F1A;
+    background: #F0F2FA;
+    transform: rotate(-1deg);
+  }
+  .b4 {
+    top: 165px; right: 10px;
+    font-size: 22px;
+    color: #F0F2FA;
+    background: rgba(0, 188, 212, 0.3);
+    border: 2px solid #00BCD4;
+    transform: rotate(3deg);
+  }
+  .b5 {
+    top: 215px; left: 10px;
+    font-size: 26px;
+    color: #0D0F1A;
+    background: #FFD93D;
+    transform: rotate(-2deg);
+  }
+  .b6 {
+    top: 270px; right: -5px;
+    font-size: 20px;
+    color: #F0F2FA;
+    background: rgba(212, 168, 67, 0.3);
+    border: 2px solid #D4A843;
+    transform: rotate(1deg);
+  }
+  .b7 {
+    top: 320px; left: 20px;
+    font-size: 30px;
+    color: #0D0F1A;
+    background: #00BCD4;
+    transform: rotate(-4deg);
+  }
+
+  /* Friends face - blank */
+  .face-blank {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #FFD93D, #F0C020);
+    position: relative;
+    margin-bottom: 30px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+
+  .face-blank .eye {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #333;
+    border-radius: 50%;
+    top: 48px;
+  }
+  .face-blank .eye.left { left: 38px; }
+  .face-blank .eye.right { right: 38px; }
+
+  .face-blank .mouth {
+    position: absolute;
+    bottom: 35px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 35px;
+    height: 3px;
+    background: #333;
+    border-radius: 2px;
+  }
+
+  /* Dots bubble */
+  .dots-bubble {
+    background: rgba(255,255,255,0.06);
+    border: 2px solid rgba(255,255,255,0.12);
+    border-radius: 20px;
+    padding: 25px 45px;
+    margin-top: 60px;
+  }
+
+  .dots {
+    font-family: 'Inter', sans-serif;
+    font-size: 56px;
+    font-weight: 900;
+    color: #555;
+    letter-spacing: 12px;
+  }
+
+  /* Logo */
+  .logo {
+    position: absolute;
+    bottom: 30px;
+    right: 40px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 18px;
+    color: #F0F2FA;
+    opacity: 0.4;
+    letter-spacing: 2px;
+  }
+  .logo span { color: #00BCD4; }
+
+  .edison-badge {
+    position: absolute;
+    bottom: 30px;
+    left: 40px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 14px;
+    color: #D4A843;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: 0.5;
+    border: 1px solid rgba(212, 168, 67, 0.3);
+    padding: 4px 12px;
+    border-radius: 4px;
+  }
+
+  /* Divider */
+  .divider {
+    position: absolute;
+    top: 200px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 740px;
+    background: linear-gradient(180deg, transparent, rgba(255,255,255,0.1) 20%, rgba(255,255,255,0.1) 80%, transparent);
+  }
+
+  .vs-badge {
+    position: absolute;
+    top: 540px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Bangers', cursive;
+    font-size: 28px;
+    color: #D4A843;
+    background: #0D0F1A;
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 2px solid rgba(212, 168, 67, 0.3);
+    z-index: 10;
+  }
+</style>
+</head>
+<body>
+
+  <div class="header">EDISON PLAYERS <span>EXPLAINING</span> WHY<br>2010 YUGIOH WAS PEAK</div>
+
+  <div class="panels">
+    <!-- Edison Player Side -->
+    <div class="panel edison">
+      <div class="panel-label">Edison Players</div>
+      <div class="face-excited" style="position: relative;">
+        <div class="eyebrow left"></div>
+        <div class="eyebrow right"></div>
+        <div class="eye left"></div>
+        <div class="eye right"></div>
+        <div class="mouth"></div>
+        <div class="arms">
+          <div class="arm left"></div>
+          <div class="arm right"></div>
+        </div>
+      </div>
+      <div class="bubble-container">
+        <div class="speech-bubble b1">PEAK FORMAT!</div>
+        <div class="speech-bubble b2">EVERY DECK VIABLE</div>
+        <div class="speech-bubble b3">IT'S CHESS!</div>
+        <div class="speech-bubble b4">SIDE DECK MATTERS</div>
+        <div class="speech-bubble b5">SKILL FORMAT</div>
+        <div class="speech-bubble b6">BALANCED META</div>
+        <div class="speech-bubble b7">PURE ART</div>
+      </div>
+    </div>
+
+    <!-- Friends Side -->
+    <div class="panel friends">
+      <div class="panel-label">Their Friends</div>
+      <div class="face-blank">
+        <div class="eye left"></div>
+        <div class="eye right"></div>
+        <div class="mouth"></div>
+      </div>
+      <div class="dots-bubble">
+        <div class="dots">. . .</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="vs-badge">VS</div>
+
+  <div class="edison-badge">Edison Format</div>
+  <div class="logo"><span>702</span>ManyCards</div>
+
+</body>
+</html>

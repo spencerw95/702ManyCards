@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080, height=1080">
+<title>Post 19 — When Someone Says Edison Is Just Set Pass</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Oswald:wght@700&family=Bangers&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px;
+    height: 1080px;
+    background: #0D0F1A;
+    font-family: 'Inter', sans-serif;
+    color: #F0F2FA;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Radial glow from center */
+  .center-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(circle, rgba(0, 188, 212, 0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* Top tier - the wrong opinion */
+  .tier-top {
+    position: absolute;
+    top: 40px;
+    left: 60px;
+    right: 60px;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    gap: 30px;
+  }
+
+  /* Smug face */
+  .face-smug {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #FFD93D, #F0C020);
+    position: relative;
+    flex-shrink: 0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  }
+
+  .face-smug .eye {
+    position: absolute;
+    width: 6px;
+    height: 3px;
+    background: #333;
+    top: 45px;
+    border-radius: 0;
+  }
+  .face-smug .eye.left { left: 30px; border-bottom: 3px solid #333; width: 18px; }
+  .face-smug .eye.right { right: 30px; border-bottom: 3px solid #333; width: 18px; }
+
+  .face-smug .mouth {
+    position: absolute;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 12px;
+    border-bottom: 3px solid #333;
+    border-radius: 0 0 15px 15px;
+  }
+
+  .wrong-bubble {
+    background: rgba(255,255,255,0.06);
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 20px 30px;
+    flex: 1;
+  }
+
+  .wrong-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 28px;
+    font-weight: 400;
+    color: #888;
+    font-style: italic;
+    line-height: 1.4;
+  }
+
+  .wrong-text .quote {
+    color: #666;
+    font-size: 42px;
+    vertical-align: -6px;
+  }
+
+  /* Middle tier - the transformation */
+  .tier-middle {
+    position: absolute;
+    top: 280px;
+    left: 40px;
+    right: 40px;
+    height: 420px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  /* Glowing face */
+  .face-glow {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #FFD93D, #F0C020);
+    position: relative;
+    box-shadow: 0 0 60px rgba(0, 188, 212, 0.5), 0 0 120px rgba(0, 188, 212, 0.2);
+    margin-bottom: 30px;
+    z-index: 2;
+  }
+
+  /* Laser eyes */
+  .laser-eye {
+    position: absolute;
+    top: 45px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #00BCD4;
+    box-shadow: 0 0 20px #00BCD4, 0 0 40px #00BCD4, 0 0 60px rgba(0, 188, 212, 0.5);
+  }
+  .laser-eye.left { left: 32px; }
+  .laser-eye.right { right: 32px; }
+
+  /* Laser beams */
+  .laser-beam {
+    position: absolute;
+    top: 52px;
+    width: 200px;
+    height: 6px;
+    background: linear-gradient(90deg, #00BCD4, transparent);
+    box-shadow: 0 0 15px rgba(0, 188, 212, 0.5);
+  }
+  .laser-beam.left { left: -180px; transform: rotate(5deg); background: linear-gradient(270deg, #00BCD4, transparent); }
+  .laser-beam.right { right: -180px; transform: rotate(-5deg); }
+
+  .face-glow .mouth {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 3px;
+    background: #333;
+    border-radius: 2px;
+  }
+
+  /* Floating knowledge text */
+  .knowledge-text {
+    position: absolute;
+    font-family: 'Bangers', cursive;
+    color: #00BCD4;
+    text-shadow: 0 0 20px rgba(0, 188, 212, 0.4);
+    white-space: nowrap;
+  }
+
+  .k1 { top: 10px; left: 40px; font-size: 26px; transform: rotate(-8deg); opacity: 0.9; }
+  .k2 { top: 60px; right: 30px; font-size: 22px; transform: rotate(5deg); opacity: 0.7; }
+  .k3 { top: 130px; left: 20px; font-size: 20px; transform: rotate(-3deg); opacity: 0.8; color: #D4A843; }
+  .k4 { top: 190px; right: 50px; font-size: 28px; transform: rotate(3deg); opacity: 0.85; }
+  .k5 { bottom: 90px; left: 60px; font-size: 24px; transform: rotate(-5deg); opacity: 0.75; color: #D4A843; }
+  .k6 { bottom: 40px; right: 40px; font-size: 20px; transform: rotate(7deg); opacity: 0.65; }
+  .k7 { bottom: 130px; right: 120px; font-size: 18px; transform: rotate(-2deg); opacity: 0.6; }
+  .k8 { top: 100px; left: 80px; font-size: 18px; transform: rotate(4deg); opacity: 0.55; color: #D4A843; }
+
+  /* Bottom tier */
+  .tier-bottom {
+    position: absolute;
+    bottom: 100px;
+    left: 0;
+    right: 0;
+    text-align: center;
+  }
+
+  .educate {
+    font-family: 'Bangers', cursive;
+    font-size: 72px;
+    color: #F0F2FA;
+    letter-spacing: 4px;
+    text-shadow: 0 0 30px rgba(0, 188, 212, 0.4), 0 4px 15px rgba(0,0,0,0.5);
+  }
+
+  /* Transition arrow */
+  .arrow-down {
+    position: absolute;
+    top: 245px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 18px solid transparent;
+    border-right: 18px solid transparent;
+    border-top: 22px solid rgba(255,255,255,0.15);
+  }
+
+  /* Logo */
+  .logo {
+    position: absolute;
+    bottom: 30px;
+    right: 40px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 18px;
+    color: #F0F2FA;
+    opacity: 0.4;
+    letter-spacing: 2px;
+  }
+  .logo span { color: #00BCD4; }
+
+  .edison-badge {
+    position: absolute;
+    bottom: 30px;
+    left: 40px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 14px;
+    color: #D4A843;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: 0.5;
+    border: 1px solid rgba(212, 168, 67, 0.3);
+    padding: 4px 12px;
+    border-radius: 4px;
+  }
+</style>
+</head>
+<body>
+
+  <div class="center-glow"></div>
+
+  <!-- Top: The bad take -->
+  <div class="tier-top">
+    <div class="face-smug">
+      <div class="eye left"></div>
+      <div class="eye right"></div>
+      <div class="mouth"></div>
+    </div>
+    <div class="wrong-bubble">
+      <div class="wrong-text"><span class="quote">"</span>Edison is boring, it's just set pass<span class="quote">"</span></div>
+    </div>
+  </div>
+
+  <div class="arrow-down"></div>
+
+  <!-- Middle: The awakening -->
+  <div class="tier-middle">
+    <div class="knowledge-text k1">SIDE DECK THEORY</div>
+    <div class="knowledge-text k2">TAG-OUT SEQUENCING</div>
+    <div class="knowledge-text k3">RESOURCE MANAGEMENT</div>
+    <div class="knowledge-text k4">READS</div>
+    <div class="knowledge-text k5">GRIND GAME</div>
+    <div class="knowledge-text k6">CHAIN RESOLUTION</div>
+    <div class="knowledge-text k7">FORMAT KNOWLEDGE</div>
+    <div class="knowledge-text k8">MATCHUP THEORY</div>
+
+    <div class="face-glow">
+      <div class="laser-eye left"></div>
+      <div class="laser-eye right"></div>
+      <div class="laser-beam left"></div>
+      <div class="laser-beam right"></div>
+      <div class="mouth"></div>
+    </div>
+  </div>
+
+  <!-- Bottom: The verdict -->
+  <div class="tier-bottom">
+    <div class="educate">EDUCATE YOURSELF.</div>
+  </div>
+
+  <div class="edison-badge">Edison Format</div>
+  <div class="logo"><span>702</span>ManyCards</div>
+
+</body>
+</html>

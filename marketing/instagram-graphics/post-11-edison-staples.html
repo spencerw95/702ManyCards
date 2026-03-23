@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080, initial-scale=1">
+<title>702ManyCards - Edison Format Staples In Stock</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Oswald:wght@400;500;600;700&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  width: 1080px;
+  height: 1080px;
+  margin: 0;
+  overflow: hidden;
+  background: #0D0F1A;
+  font-family: 'Inter', sans-serif;
+  position: relative;
+}
+
+/* Warm grid pattern */
+body::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image:
+    linear-gradient(rgba(212,168,67,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(212,168,67,0.05) 1px, transparent 1px);
+  background-size: 54px 54px;
+  z-index: 0;
+}
+
+/* Warm radial glow */
+body::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 900px;
+  height: 900px;
+  background: radial-gradient(ellipse, rgba(212,168,67,0.08) 0%, rgba(212,168,67,0.03) 40%, transparent 70%);
+  z-index: 0;
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 60px;
+}
+
+.logo {
+  width: 180px;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+/* Edison Format badge */
+.edison-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, rgba(212,168,67,0.2), rgba(212,168,67,0.08));
+  border: 1.5px solid rgba(212,168,67,0.5);
+  border-radius: 8px;
+  padding: 8px 24px;
+  margin-bottom: 24px;
+}
+
+.edison-badge span {
+  font-family: 'Oswald', sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: #D4A843;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+.badge-dot {
+  width: 8px;
+  height: 8px;
+  background: #D4A843;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(212,168,67,0.6);
+}
+
+.main-title {
+  font-family: 'Oswald', sans-serif;
+  font-size: 82px;
+  font-weight: 700;
+  color: #F0F2FA;
+  text-align: center;
+  line-height: 1;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  text-shadow: 0 0 30px rgba(0,188,212,0.4), 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.main-subtitle {
+  font-family: 'Oswald', sans-serif;
+  font-size: 52px;
+  font-weight: 500;
+  color: #00BCD4;
+  text-align: center;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  margin-bottom: 30px;
+  text-shadow: 0 0 20px rgba(0,188,212,0.5);
+}
+
+.divider {
+  width: 160px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #D4A843, transparent);
+  margin-bottom: 30px;
+}
+
+/* Card name grid */
+.cards-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  max-width: 920px;
+  margin-bottom: 30px;
+}
+
+.card-tag {
+  background: linear-gradient(135deg, rgba(212,168,67,0.15), rgba(212,168,67,0.05));
+  border: 1px solid rgba(212,168,67,0.35);
+  border-radius: 6px;
+  padding: 12px 20px;
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: #D4A843;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-tag::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px;
+  height: 100%;
+  background: #D4A843;
+  opacity: 0.6;
+}
+
+.card-tag.highlight {
+  background: linear-gradient(135deg, rgba(0,188,212,0.15), rgba(0,188,212,0.05));
+  border-color: rgba(0,188,212,0.4);
+  color: #00BCD4;
+}
+
+.card-tag.highlight::before {
+  background: #00BCD4;
+}
+
+.cta-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 22px;
+  color: rgba(240,242,250,0.7);
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-top: auto;
+  margin-bottom: 8px;
+}
+
+.bottom-url {
+  font-family: 'Inter', sans-serif;
+  font-size: 28px;
+  color: rgba(240,242,250,0.5);
+  letter-spacing: 3px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+/* Synchro ring decorations */
+.synchro-ring {
+  position: absolute;
+  border: 1.5px solid rgba(212,168,67,0.1);
+  border-radius: 50%;
+  z-index: 0;
+}
+.synchro-ring:nth-of-type(1) { width: 300px; height: 300px; top: -80px; right: -80px; }
+.synchro-ring:nth-of-type(2) { width: 200px; height: 200px; bottom: -50px; left: -50px; }
+.synchro-ring:nth-of-type(3) { width: 400px; height: 400px; bottom: -150px; right: -100px; border-color: rgba(0,188,212,0.05); }
+
+/* Star level dots */
+.star-dots {
+  position: absolute;
+  top: 165px;
+  display: flex;
+  gap: 8px;
+  z-index: 0;
+}
+.star-dots.left { left: 60px; }
+.star-dots.right { right: 60px; }
+.star-dot {
+  width: 10px;
+  height: 10px;
+  background: rgba(212,168,67,0.2);
+  border-radius: 50%;
+}
+</style>
+</head>
+<body>
+  <div class="synchro-ring"></div>
+  <div class="synchro-ring"></div>
+  <div class="synchro-ring"></div>
+
+  <div class="star-dots left">
+    <div class="star-dot"></div><div class="star-dot"></div><div class="star-dot"></div><div class="star-dot"></div>
+  </div>
+  <div class="star-dots right">
+    <div class="star-dot"></div><div class="star-dot"></div><div class="star-dot"></div><div class="star-dot"></div>
+  </div>
+
+  <div class="container">
+    <img src="../../public/logo.png" alt="702ManyCards" class="logo">
+
+    <div class="edison-badge">
+      <div class="badge-dot"></div>
+      <span>Edison Format</span>
+      <div class="badge-dot"></div>
+    </div>
+
+    <div class="main-title">Edison Staples</div>
+    <div class="main-subtitle">In Stock</div>
+    <div class="divider"></div>
+
+    <div class="cards-grid">
+      <div class="card-tag highlight">Caius the Shadow Monarch</div>
+      <div class="card-tag">Ryko, Lightsworn Hunter</div>
+      <div class="card-tag">Book of Moon</div>
+      <div class="card-tag highlight">Super-Nimble Mega Hamster</div>
+      <div class="card-tag">Bottomless Trap Hole</div>
+      <div class="card-tag highlight">Brain Control</div>
+      <div class="card-tag">Solemn Warning</div>
+      <div class="card-tag">Heavy Storm</div>
+      <div class="card-tag highlight">Mystical Space Typhoon</div>
+      <div class="card-tag">Torrential Tribute</div>
+      <div class="card-tag">Mirror Force</div>
+      <div class="card-tag highlight">Charge of the Light Brigade</div>
+    </div>
+
+    <div class="cta-text">Browse all Edison singles at</div>
+    <div class="bottom-url">702manycards.com</div>
+  </div>
+</body>
+</html>

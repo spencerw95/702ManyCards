@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080, initial-scale=1">
+<title>702ManyCards - Pick One Forever</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700;900&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  width: 1080px;
+  height: 1080px;
+  margin: 0;
+  overflow: hidden;
+  background: #0D0F1A;
+  font-family: 'Inter', sans-serif;
+  position: relative;
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.logo {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 160px;
+  height: auto;
+  z-index: 10;
+}
+
+/* Top section */
+.top-section {
+  padding: 110px 0 30px;
+  text-align: center;
+  background: #0D0F1A;
+}
+
+.pick-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 90px;
+  color: #FFFFFF;
+  letter-spacing: 6px;
+  text-shadow: 0 0 20px rgba(0,188,212,0.4);
+}
+
+/* Three columns */
+.columns {
+  flex: 1;
+  display: flex;
+  position: relative;
+}
+
+.column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+}
+
+/* Column backgrounds */
+.col-yugioh {
+  background: linear-gradient(180deg, rgba(212,168,67,0.2) 0%, rgba(212,168,67,0.08) 100%);
+}
+
+.col-pokemon {
+  background: linear-gradient(180deg, rgba(220,50,50,0.2) 0%, rgba(220,50,50,0.08) 100%);
+}
+
+.col-mtg {
+  background: linear-gradient(180deg, rgba(100,80,200,0.2) 0%, rgba(100,80,200,0.08) 100%);
+}
+
+/* VS dividers */
+.vs-divider {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 60px;
+  height: 60px;
+  background: #0D0F1A;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 26px;
+  color: #F0F2FA;
+  z-index: 5;
+  border: 2px solid rgba(240,242,250,0.2);
+}
+
+.vs-1 { left: calc(33.33% - 30px); }
+.vs-2 { left: calc(66.66% - 30px); }
+
+/* Card game icons */
+.game-icon {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 25px;
+  position: relative;
+}
+
+/* Yu-Gi-Oh star icon */
+.icon-yugioh {
+  border: 3px solid rgba(212,168,67,0.5);
+  background: rgba(212,168,67,0.1);
+}
+
+.icon-yugioh::before {
+  content: '';
+  width: 60px;
+  height: 60px;
+  background: rgba(212,168,67,0.3);
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+
+/* Pokemon ball icon */
+.icon-pokemon {
+  border: 3px solid rgba(220,50,50,0.5);
+  background: rgba(220,50,50,0.1);
+  overflow: hidden;
+}
+
+.icon-pokemon::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: rgba(220,50,50,0.25);
+  border-bottom: 3px solid rgba(220,50,50,0.4);
+}
+
+.icon-pokemon::after {
+  content: '';
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 3px solid rgba(220,50,50,0.5);
+  background: #0D0F1A;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+}
+
+/* MTG mana icon */
+.icon-mtg {
+  border: 3px solid rgba(100,80,200,0.5);
+  background: rgba(100,80,200,0.1);
+}
+
+.icon-mtg::before {
+  content: '';
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(100,80,200,0.3);
+  box-shadow:
+    20px -15px 0 -5px rgba(100,80,200,0.25),
+    -20px -15px 0 -5px rgba(100,80,200,0.25),
+    15px 18px 0 -5px rgba(100,80,200,0.25),
+    -15px 18px 0 -5px rgba(100,80,200,0.25);
+}
+
+.game-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 52px;
+  color: #F0F2FA;
+  text-align: center;
+  letter-spacing: 4px;
+}
+
+.col-yugioh .game-name { color: #D4A843; }
+.col-pokemon .game-name { color: #EF5350; }
+.col-mtg .game-name { color: #9C8FE0; }
+
+/* Bottom section */
+.bottom-section {
+  padding: 25px 0 50px;
+  text-align: center;
+  background: #0D0F1A;
+}
+
+.comment-cta {
+  font-size: 36px;
+  color: rgba(240,242,250,0.7);
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.bottom-url {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Inter', sans-serif;
+  font-size: 22px;
+  color: rgba(240,242,250,0.4);
+  letter-spacing: 3px;
+  font-weight: 600;
+}
+</style>
+</head>
+<body>
+  <div class="container">
+    <img src="../../public/logo.png" alt="702ManyCards" class="logo">
+
+    <div class="top-section">
+      <div class="pick-text">PICK ONE FOREVER</div>
+    </div>
+
+    <div class="columns">
+      <div class="vs-divider vs-1">VS</div>
+      <div class="vs-divider vs-2">VS</div>
+
+      <div class="column col-yugioh">
+        <div class="game-icon icon-yugioh"></div>
+        <div class="game-name">YU-GI-OH!</div>
+      </div>
+
+      <div class="column col-pokemon">
+        <div class="game-icon icon-pokemon"></div>
+        <div class="game-name">POKEMON</div>
+      </div>
+
+      <div class="column col-mtg">
+        <div class="game-icon icon-mtg"></div>
+        <div class="game-name">MTG</div>
+      </div>
+    </div>
+
+    <div class="bottom-section">
+      <div class="comment-cta">Comment your answer &#128071;</div>
+    </div>
+  </div>
+
+  <div class="bottom-url">702manycards.com</div>
+</body>
+</html>

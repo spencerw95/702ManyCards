@@ -14,7 +14,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const user = validateCredentials(username, password);
+    const user = await validateCredentials(username, password);
     if (!user) {
       return NextResponse.json(
         { success: false, error: "Invalid credentials" },
