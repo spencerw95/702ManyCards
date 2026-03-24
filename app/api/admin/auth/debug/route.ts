@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getAdminUsers } from "@/lib/auth";
 
 export async function GET() {
-  const users = getAdminUsers();
+  const users = await getAdminUsers();
   // Only show usernames and roles, never passwords
   const safeUsers = users.map((u) => ({
     username: u.username,
