@@ -1,10 +1,32 @@
 import { NextResponse } from "next/server";
 import { randomBytes } from "crypto";
-import type { CardCondition, CardEdition } from "@/lib/types";
+import type { InventoryItem, CardCondition, CardEdition, TCGGame } from "@/lib/types";
 import { CONDITION_SHORT } from "@/lib/types";
 import { getUserFromRequest } from "@/lib/auth";
 import { logActivity } from "@/lib/activity-log";
 import { getServiceSupabase } from "@/lib/supabase";
+
+function mapRow(row: Record<string, unknown>): InventoryItem {
+  return {
+    id: row.id as string,
+    cardName: row.card_name as string,
+    setName: row.set_name as string,
+    setCode: row.set_code as string,
+    rarity: row.rarity as string,
+    condition: (row.condition as CardCondition) || "Near Mint",
+    edition: (row.edition as InventoryItem["edition"]) || "Unlimited",
+    price: Number(row.price) || 0,
+    cost: row.cost != null ? Number(row.cost) : undefined,
+    quantity: Number(row.quantity) || 0,
+    game: (row.game as TCGGame) || "yugioh",
+    slug: row.slug as string,
+    dateAdded: row.date_added as string,
+    language: "English",
+    imageUrl: (row.image_url as string) || undefined,
+    images: (row.images as string[]) || undefined,
+    pricingRule: (row.pricing_rule as InventoryItem["pricingRule"]) || undefined,
+  };
+}
 
 function generateId(
   setCode: string,
@@ -33,7 +55,7 @@ export async function GET() {
       .order("date_added", { ascending: false });
 
     if (error) throw error;
-    return NextResponse.json(data || []);
+    return NextResponse.json((data || []).map(mapRow));
   } catch (e) {
     console.error("[admin/inventory] GET failed:", e);
     return NextResponse.json([]);

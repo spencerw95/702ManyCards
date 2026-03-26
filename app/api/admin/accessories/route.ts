@@ -1,9 +1,30 @@
 import { NextResponse } from "next/server";
 import { randomBytes } from "crypto";
-import type { AccessoryItem } from "@/lib/types";
+import type { AccessoryItem, AccessoryCategory } from "@/lib/types";
 import { getUserFromRequest } from "@/lib/auth";
 import { logActivity } from "@/lib/activity-log";
 import { getServiceSupabase } from "@/lib/supabase";
+
+function mapRow(row: Record<string, unknown>): AccessoryItem {
+  return {
+    id: row.id as string,
+    name: row.name as string,
+    description: (row.description as string) || "",
+    category: row.category as AccessoryCategory,
+    subcategory: (row.subcategory as string) || undefined,
+    price: Number(row.price) || 0,
+    cost: row.cost != null ? Number(row.cost) : undefined,
+    quantity: Number(row.quantity) || 0,
+    imageUrl: (row.image_url as string) || undefined,
+    images: (row.images as string[]) || undefined,
+    brand: (row.brand as string) || undefined,
+    color: (row.color as string) || undefined,
+    game: (row.game as AccessoryItem["game"]) || undefined,
+    setName: (row.set_name as string) || undefined,
+    dateAdded: row.date_added as string,
+    slug: row.slug as string,
+  };
+}
 
 function generateId(): string {
   return `ACC-${Date.now()}-${randomBytes(2).toString("hex")}`;
@@ -25,7 +46,7 @@ export async function GET() {
       .order("date_added", { ascending: false });
 
     if (error) throw error;
-    return NextResponse.json(data || []);
+    return NextResponse.json((data || []).map(mapRow));
   } catch (e) {
     console.error("[admin/accessories] GET failed:", e);
     return NextResponse.json([]);
