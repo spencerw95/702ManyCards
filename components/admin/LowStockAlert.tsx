@@ -67,8 +67,9 @@ export default function LowStockAlert() {
     async function fetchAlerts() {
       try {
         const res = await fetch("/api/admin/alerts?threshold=5");
+        if (!res.ok) { setLoading(false); return; }
         const json = await res.json();
-        setData(json);
+        if (json && json.summary) setData(json);
       } catch {
         // fail silently
       }
@@ -77,7 +78,7 @@ export default function LowStockAlert() {
     fetchAlerts();
   }, []);
 
-  if (loading || !data || data.summary.total === 0 || dismissed) {
+  if (loading || !data || !data.summary || data.summary.total === 0 || dismissed) {
     return null;
   }
 
