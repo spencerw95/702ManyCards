@@ -49,6 +49,10 @@ export default function ActivityLogPage() {
   const fetchActivity = useCallback(async () => {
     try {
       const res = await fetch("/api/admin/activity?limit=500");
+      if (!res.ok) {
+        setLoading(false);
+        return;
+      }
       const data = await res.json();
       setEntries(data.entries || []);
       setTotal(data.total || 0);

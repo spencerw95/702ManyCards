@@ -96,7 +96,7 @@ export default function ReviewsPage() {
   const updateReviewStatus = async (reviewId: string, newStatus: ReviewStatus) => {
     setUpdatingId(reviewId);
     try {
-      const res = await fetch(`/api/reviews/${reviewId}`, {
+      const res = await fetch(`/api/admin/reviews/${reviewId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),

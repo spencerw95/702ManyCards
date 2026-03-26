@@ -63,6 +63,7 @@ export default function PricingPage() {
   const [applyMode, setApplyMode] = useState<"all" | "selected">("all");
   const [applying, setApplying] = useState(false);
   const [result, setResult] = useState<{ updatedCount: number; averageChangePercent: number } | null>(null);
+  const [applyError, setApplyError] = useState("");
 
   const buildPayload = (action: "preview" | "apply", ids?: string[] | null) => ({
     action,
@@ -107,6 +108,7 @@ export default function PricingPage() {
   const handleApply = async () => {
     setApplying(true);
     setShowConfirm(false);
+    setApplyError("");
 
     const ids = applyMode === "selected" ? Array.from(selectedIds) : null;
 
@@ -123,9 +125,11 @@ export default function PricingPage() {
         // Clear the preview
         setChanges([]);
         setSummary(null);
+      } else {
+        setApplyError(data.error || "Failed to apply price changes. Please try again.");
       }
     } catch {
-      // fail silently
+      setApplyError("Failed to apply price changes. Please try again.");
     }
     setApplying(false);
   };
@@ -346,6 +350,13 @@ export default function PricingPage() {
           <div className="mt-3 h-1.5 bg-[var(--color-bg-secondary)] rounded-full overflow-hidden">
             <div className="h-full bg-[var(--color-primary)] rounded-full animate-pulse" style={{ width: "60%" }} />
           </div>
+        </div>
+      )}
+
+      {/* Apply Error Banner */}
+      {applyError && (
+        <div className="bg-[var(--color-danger)]/10 border border-[var(--color-danger)]/30 rounded-[var(--radius-lg)] p-4">
+          <p className="text-sm text-[var(--color-danger)]">{applyError}</p>
         </div>
       )}
 

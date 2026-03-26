@@ -105,6 +105,10 @@ export default function ReportsPage() {
       setLoading(true);
       try {
         const res = await fetch(`/api/admin/reports?days=${days}`);
+        if (!res.ok) {
+          setLoading(false);
+          return;
+        }
         const json = await res.json();
         setData(json);
       } catch {
