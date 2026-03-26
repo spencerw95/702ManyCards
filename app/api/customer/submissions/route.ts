@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     );
   }
 
-  const allSubmissions = getAllSubmissions();
+  const allSubmissions = await getAllSubmissions();
   const customerSubmissions = allSubmissions.filter(
     (sub) => sub.customer.email.toLowerCase() === auth.email.toLowerCase()
   );

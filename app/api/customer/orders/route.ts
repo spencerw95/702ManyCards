@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     );
   }
 
-  const allOrders = getAllOrders();
+  const allOrders = await getAllOrders();
   const customerOrders = allOrders.filter(
     (order) => order.customer.email.toLowerCase() === auth.email.toLowerCase()
   );

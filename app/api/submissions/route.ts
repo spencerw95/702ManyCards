@@ -58,7 +58,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const submission = createSubmission({
+    const submission = await createSubmission({
       customer: {
         name: body.customer.name.trim(),
         email: body.customer.email.trim(),
@@ -71,7 +71,7 @@ export async function POST(request: Request) {
       images: validImages,
     });
 
-    logActivity(
+    await logActivity(
       "submission_received",
       "customer",
       `New card submission from ${body.customer.name} (${validImages.length} photos)`,

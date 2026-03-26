@@ -94,7 +94,7 @@ export async function POST(request: Request) {
       email = auth.email;
 
       // Check if logged-in customer has an order containing this product
-      const orders = getAllOrders();
+      const orders = await getAllOrders();
       verifiedPurchase = orders.some(
         (order) =>
           order.customer.email.toLowerCase() === auth.email.toLowerCase() &&

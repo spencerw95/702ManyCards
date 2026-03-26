@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const days = parseInt(searchParams.get("days") || "30", 10);
 
-  const allOrders = getAllOrders();
+  const allOrders = await getAllOrders();
   const now = new Date();
   const startDate = new Date(now);
   startDate.setDate(startDate.getDate() - days);
