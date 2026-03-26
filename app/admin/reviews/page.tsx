@@ -71,7 +71,18 @@ export default function ReviewsPage() {
     try {
       const res = await fetch("/api/admin/reviews");
       const data = await res.json();
-      setReviews(Array.isArray(data) ? data : []);
+      const raw: Record<string, unknown>[] = Array.isArray(data.reviews) ? data.reviews : [];
+      setReviews(raw.map((r) => ({
+        id: r.id as string,
+        productName: (r.product_name as string) || "",
+        customerName: (r.customer_name as string) || "",
+        customerEmail: (r.customer_email as string) || "",
+        rating: (r.rating as number) || 0,
+        title: (r.title as string) || "",
+        body: (r.body as string) || "",
+        status: (r.status as ReviewStatus) || "pending",
+        createdAt: (r.created_at as string) || "",
+      })));
     } catch {
       // fail silently
     }

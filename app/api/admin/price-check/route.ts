@@ -1,20 +1,6 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
-import type { InventoryItem } from "@/lib/types";
 import { getUserFromRequest } from "@/lib/auth";
 import { getServiceSupabase } from "@/lib/supabase";
-
-const INVENTORY_FILE = path.join(process.cwd(), "data", "inventory.json");
-
-function readInventory(): InventoryItem[] {
-  try {
-    const raw = fs.readFileSync(INVENTORY_FILE, "utf-8");
-    return JSON.parse(raw) as InventoryItem[];
-  } catch {
-    return [];
-  }
-}
 
 export async function POST(request: Request) {
   // Admin-only endpoint
@@ -50,13 +36,15 @@ export async function POST(request: Request) {
     });
   }
 
-  // Load current inventory to get latest prices
-  const inventory = readInventory();
+  // Load current inventory from Supabase to get latest prices
+  const { data: inventory } = await supabase
+    .from("inventory")
+    .select("slug, price, quantity")
+    .gt("quantity", 0);
 
   // Build a slug -> lowest price map
   const priceMap = new Map<string, number>();
-  for (const item of inventory) {
-    if (item.quantity <= 0) continue;
+  for (const item of inventory || []) {
     const existing = priceMap.get(item.slug);
     if (existing === undefined || item.price < existing) {
       priceMap.set(item.slug, item.price);

@@ -1,28 +1,6 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
-import type { InventoryItem, AccessoryItem } from "@/lib/types";
-
-const INVENTORY_FILE = path.join(process.cwd(), "data", "inventory.json");
-const ACCESSORIES_FILE = path.join(process.cwd(), "data", "accessories.json");
-
-function readInventory(): InventoryItem[] {
-  try {
-    const raw = fs.readFileSync(INVENTORY_FILE, "utf-8");
-    return JSON.parse(raw) as InventoryItem[];
-  } catch {
-    return [];
-  }
-}
-
-function readAccessories(): AccessoryItem[] {
-  try {
-    const raw = fs.readFileSync(ACCESSORIES_FILE, "utf-8");
-    return JSON.parse(raw) as AccessoryItem[];
-  } catch {
-    return [];
-  }
-}
+import { getUserFromRequest } from "@/lib/auth";
+import { getServiceSupabase } from "@/lib/supabase";
 
 export type AlertUrgency = "critical" | "warning" | "low";
 
@@ -52,40 +30,43 @@ function getUrgency(quantity: number): AlertUrgency {
 }
 
 export async function GET(request: Request) {
+  const user = getUserFromRequest(request);
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const { searchParams } = new URL(request.url);
   const threshold = parseInt(searchParams.get("threshold") || "5", 10);
 
-  const inventory = readInventory();
-  const accessories = readAccessories();
+  const sb = getServiceSupabase();
+
+  const [{ data: inventory }, { data: accessories }] = await Promise.all([
+    sb.from("inventory").select("id, card_name, quantity, game").lte("quantity", threshold),
+    sb.from("accessories").select("id, name, quantity, game").lte("quantity", threshold),
+  ]);
 
   const alertItems: LowStockAlertItem[] = [];
 
-  // Check inventory cards
-  for (const item of inventory) {
-    if (item.quantity <= threshold) {
-      alertItems.push({
-        id: item.id,
-        name: item.cardName,
-        quantity: item.quantity,
-        type: "card",
-        game: item.game,
-        urgency: getUrgency(item.quantity),
-      });
-    }
+  for (const item of inventory || []) {
+    alertItems.push({
+      id: item.id,
+      name: item.card_name,
+      quantity: item.quantity,
+      type: "card",
+      game: item.game || undefined,
+      urgency: getUrgency(item.quantity),
+    });
   }
 
-  // Check accessories
-  for (const item of accessories) {
-    if (item.quantity <= threshold) {
-      alertItems.push({
-        id: item.id,
-        name: item.name,
-        quantity: item.quantity,
-        type: "accessory",
-        game: item.game || undefined,
-        urgency: getUrgency(item.quantity),
-      });
-    }
+  for (const item of accessories || []) {
+    alertItems.push({
+      id: item.id,
+      name: item.name,
+      quantity: item.quantity,
+      type: "accessory",
+      game: item.game || undefined,
+      urgency: getUrgency(item.quantity),
+    });
   }
 
   // Sort: critical first, then warning, then low

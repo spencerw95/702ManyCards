@@ -44,6 +44,8 @@ export default function CheckoutPage() {
   const [coupon, setCoupon] = useState<Coupon | null>(null);
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [orderNumber, setOrderNumber] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [errors, setErrors] = useState<FormErrors>({});
   const [form, setForm] = useState<ShippingForm>({
     fullName: "",
@@ -81,17 +83,66 @@ export default function CheckoutPage() {
     return errs;
   }
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     const errs = validate();
     setErrors(errs);
     if (Object.keys(errs).length > 0) return;
 
-    const id = `702-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
-    setOrderNumber(id);
-    setOrderPlaced(true);
-    clearCart();
-    setCart([]);
+    setSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const res = await fetch("/api/admin/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: cart.map((item) => ({
+            inventoryId: item.inventoryId,
+            cardName: item.cardName,
+            setCode: item.setCode,
+            condition: item.condition,
+            edition: item.edition,
+            price: item.price,
+            quantity: item.quantity,
+            imageUrl: item.imageUrl,
+          })),
+          customer: {
+            name: form.fullName,
+            email: form.email,
+            phone: form.phone || undefined,
+            address: {
+              line1: form.address1,
+              line2: form.address2 || undefined,
+              city: form.city,
+              state: form.state,
+              zip: form.zip,
+              country: form.country,
+            },
+          },
+          subtotal,
+          shipping,
+          discount,
+          total: total - discount,
+          status: "pending",
+          notes: form.notes || undefined,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to place order");
+      }
+
+      setOrderNumber(data.order.id);
+      setOrderPlaced(true);
+      clearCart();
+      setCart([]);
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : "Failed to place order. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   function updateField(field: keyof ShippingForm, value: string) {
@@ -396,11 +447,15 @@ export default function CheckoutPage() {
               </div>
 
               {/* Place Order Button */}
+              {submitError && (
+                <p className="mt-4 text-sm text-[var(--color-danger)] text-center">{submitError}</p>
+              )}
               <button
                 type="submit"
-                className="mt-6 w-full py-3 rounded-lg text-white font-semibold bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/40 focus:ring-offset-2"
+                disabled={submitting}
+                className="mt-6 w-full py-3 rounded-lg text-white font-semibold bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/40 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                Place Order
+                {submitting ? "Placing Order..." : "Place Order"}
               </button>
 
               <p className="mt-3 text-xs text-center text-[var(--color-text-muted)]">
