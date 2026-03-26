@@ -21,12 +21,7 @@ function sign(payload: string): string {
   return createHmac("sha256", getSecret()).update(payload).digest("hex");
 }
 
-// Default admin users — used as fallback when Supabase is unavailable
-const DEFAULT_ADMIN_USERS: AdminUser[] = [
-  { username: "spencer", password: "702cards2026", role: "owner", createdAt: "2026-03-21" },
-  { username: "Damien", password: "Admin123", role: "owner", createdAt: "2026-03-22" },
-  { username: "admin", password: "702admin2026", role: "editor", createdAt: "2026-03-21" },
-];
+const DEFAULT_ADMIN_USERS: AdminUser[] = [];
 
 /**
  * Get Supabase client for auth operations.

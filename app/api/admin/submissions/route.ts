@@ -13,20 +13,11 @@ const VALID_STATUSES: SubmissionStatus[] = [
   "completed",
 ];
 
-/**
- * GET: Return all submissions (newest first).
- */
 export async function GET() {
-  const submissions = getAllSubmissions();
-  const sorted = [...submissions].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-  return NextResponse.json(sorted);
+  const submissions = await getAllSubmissions();
+  return NextResponse.json(submissions);
 }
 
-/**
- * PUT: Update a submission (status, offerAmount, adminNotes, responseMessage).
- */
 export async function PUT(request: Request) {
   try {
     const user = getUserFromRequest(request);
@@ -53,10 +44,10 @@ export async function PUT(request: Request) {
     if (adminNotes !== undefined) updates.adminNotes = adminNotes;
     if (responseMessage !== undefined) updates.responseMessage = responseMessage;
 
-    const submission = updateSubmission(id, updates as Parameters<typeof updateSubmission>[1]);
+    const submission = await updateSubmission(id, updates as Parameters<typeof updateSubmission>[1]);
 
     if (status) {
-      logActivity(
+      await logActivity(
         "submission_received",
         user?.username || "unknown",
         `Updated submission ${id} status to "${status}"`,

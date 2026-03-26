@@ -1,103 +1,129 @@
-import fs from "fs";
-import path from "path";
 import { randomBytes } from "crypto";
 import type { CardSubmission, SubmissionStatus } from "./types";
+import { getServiceSupabase } from "./supabase";
 
-const SUBMISSIONS_FILE = path.join(process.cwd(), "data", "submissions.json");
+function mapRow(row: Record<string, unknown>): CardSubmission {
+  return {
+    id: row.id as string,
+    customer: row.customer as CardSubmission["customer"],
+    description: (row.description as string) || "",
+    estimatedValue: (row.estimated_value as string) || undefined,
+    cardCount: row.card_count != null ? Number(row.card_count) : undefined,
+    games: (row.games as string[]) || undefined,
+    images: (row.images as CardSubmission["images"]) || [],
+    status: (row.status as SubmissionStatus) || "pending",
+    offerAmount: row.offer_amount != null ? Number(row.offer_amount) : undefined,
+    adminNotes: (row.admin_notes as string) || undefined,
+    responseMessage: (row.response_message as string) || undefined,
+    createdAt: row.created_at as string,
+    updatedAt: row.updated_at as string,
+  };
+}
 
-function readSubmissions(): CardSubmission[] {
+export async function getAllSubmissions(): Promise<CardSubmission[]> {
   try {
-    const raw = fs.readFileSync(SUBMISSIONS_FILE, "utf-8");
-    return JSON.parse(raw) as CardSubmission[];
-  } catch {
+    const sb = getServiceSupabase();
+    const { data, error } = await sb
+      .from("submissions")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) throw error;
+    return (data || []).map(mapRow);
+  } catch (e) {
+    console.error("[submissions] getAllSubmissions failed:", e);
     return [];
   }
 }
 
-function writeSubmissions(submissions: CardSubmission[]): void {
-  fs.writeFileSync(SUBMISSIONS_FILE, JSON.stringify(submissions, null, 2), "utf-8");
+export async function getSubmissionById(id: string): Promise<CardSubmission | undefined> {
+  try {
+    const sb = getServiceSupabase();
+    const { data, error } = await sb
+      .from("submissions")
+      .select("*")
+      .eq("id", id)
+      .single();
+    if (error) throw error;
+    return data ? mapRow(data) : undefined;
+  } catch (e) {
+    console.error("[submissions] getSubmissionById failed:", e);
+    return undefined;
+  }
 }
 
-/**
- * Get all submissions.
- */
-export function getAllSubmissions(): CardSubmission[] {
-  return readSubmissions();
-}
-
-/**
- * Get a single submission by ID.
- */
-export function getSubmissionById(id: string): CardSubmission | undefined {
-  return readSubmissions().find((s) => s.id === id);
-}
-
-/**
- * Create a new submission. Generates ID and timestamps automatically.
- */
-export function createSubmission(
+export async function createSubmission(
   data: Omit<CardSubmission, "id" | "status" | "createdAt" | "updatedAt" | "offerAmount" | "adminNotes" | "responseMessage">
-): CardSubmission {
-  const submissions = readSubmissions();
+): Promise<CardSubmission> {
+  const sb = getServiceSupabase();
   const id = `SUB-${Date.now()}-${randomBytes(3).toString("hex")}`;
   const now = new Date().toISOString();
 
-  const newSubmission: CardSubmission = {
-    ...data,
+  const row = {
     id,
+    customer: data.customer,
+    description: data.description,
+    estimated_value: data.estimatedValue || null,
+    card_count: data.cardCount || null,
+    games: data.games || null,
+    images: data.images || [],
     status: "pending",
-    createdAt: now,
-    updatedAt: now,
+    created_at: now,
+    updated_at: now,
   };
 
-  submissions.push(newSubmission);
-  writeSubmissions(submissions);
-  return newSubmission;
+  const { data: inserted, error } = await sb.from("submissions").insert(row).select().single();
+  if (error) throw error;
+  return mapRow(inserted);
 }
 
-/**
- * Update an existing submission.
- */
-export function updateSubmission(
+export async function updateSubmission(
   id: string,
   updates: Partial<Pick<CardSubmission, "status" | "offerAmount" | "adminNotes" | "responseMessage">>
-): CardSubmission {
-  const submissions = readSubmissions();
-  const index = submissions.findIndex((s) => s.id === id);
+): Promise<CardSubmission> {
+  const sb = getServiceSupabase();
+  const now = new Date().toISOString();
 
-  if (index === -1) {
-    throw new Error(`Submission not found: ${id}`);
-  }
+  const dbUpdates: Record<string, unknown> = { updated_at: now };
+  if (updates.status !== undefined) dbUpdates.status = updates.status;
+  if (updates.offerAmount !== undefined) dbUpdates.offer_amount = updates.offerAmount;
+  if (updates.adminNotes !== undefined) dbUpdates.admin_notes = updates.adminNotes;
+  if (updates.responseMessage !== undefined) dbUpdates.response_message = updates.responseMessage;
 
-  if (updates.status !== undefined) submissions[index].status = updates.status;
-  if (updates.offerAmount !== undefined) submissions[index].offerAmount = updates.offerAmount;
-  if (updates.adminNotes !== undefined) submissions[index].adminNotes = updates.adminNotes;
-  if (updates.responseMessage !== undefined) submissions[index].responseMessage = updates.responseMessage;
-  submissions[index].updatedAt = new Date().toISOString();
+  const { data, error } = await sb
+    .from("submissions")
+    .update(dbUpdates)
+    .eq("id", id)
+    .select()
+    .single();
 
-  writeSubmissions(submissions);
-  return submissions[index];
+  if (error) throw error;
+  if (!data) throw new Error(`Submission not found: ${id}`);
+  return mapRow(data);
 }
 
-/**
- * Get submission counts by status.
- */
-export function getSubmissionStats(): Record<SubmissionStatus, number> {
-  const submissions = readSubmissions();
-  const stats: Record<SubmissionStatus, number> = {
-    pending: 0,
-    reviewing: 0,
-    offer_sent: 0,
-    accepted: 0,
-    declined: 0,
-    completed: 0,
-  };
+export async function getSubmissionStats(): Promise<Record<SubmissionStatus, number>> {
+  try {
+    const sb = getServiceSupabase();
+    const { data, error } = await sb.from("submissions").select("status");
+    if (error) throw error;
 
-  for (const s of submissions) {
-    if (stats[s.status] !== undefined) {
-      stats[s.status]++;
+    const stats: Record<SubmissionStatus, number> = {
+      pending: 0,
+      reviewing: 0,
+      offer_sent: 0,
+      accepted: 0,
+      declined: 0,
+      completed: 0,
+    };
+
+    for (const row of data || []) {
+      const s = row.status as SubmissionStatus;
+      if (stats[s] !== undefined) stats[s]++;
     }
-  }
 
-  return stats;
+    return stats;
+  } catch (e) {
+    console.error("[submissions] getSubmissionStats failed:", e);
+    return { pending: 0, reviewing: 0, offer_sent: 0, accepted: 0, declined: 0, completed: 0 };
+  }
 }

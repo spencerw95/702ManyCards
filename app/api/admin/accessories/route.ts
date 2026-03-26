@@ -1,25 +1,9 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
 import { randomBytes } from "crypto";
 import type { AccessoryItem } from "@/lib/types";
 import { getUserFromRequest } from "@/lib/auth";
 import { logActivity } from "@/lib/activity-log";
-
-const ACCESSORIES_FILE = path.join(process.cwd(), "data", "accessories.json");
-
-function readAccessories(): AccessoryItem[] {
-  try {
-    const raw = fs.readFileSync(ACCESSORIES_FILE, "utf-8");
-    return JSON.parse(raw) as AccessoryItem[];
-  } catch {
-    return [];
-  }
-}
-
-function writeAccessories(items: AccessoryItem[]): void {
-  fs.writeFileSync(ACCESSORIES_FILE, JSON.stringify(items, null, 2), "utf-8");
-}
+import { getServiceSupabase } from "@/lib/supabase";
 
 function generateId(): string {
   return `ACC-${Date.now()}-${randomBytes(2).toString("hex")}`;
@@ -32,58 +16,61 @@ function generateSlug(name: string): string {
     .replace(/(^-|-$)/g, "");
 }
 
-/**
- * GET: Return all accessory items.
- */
 export async function GET() {
-  const items = readAccessories();
-  return NextResponse.json(items);
+  try {
+    const sb = getServiceSupabase();
+    const { data, error } = await sb
+      .from("accessories")
+      .select("*")
+      .order("date_added", { ascending: false });
+
+    if (error) throw error;
+    return NextResponse.json(data || []);
+  } catch (e) {
+    console.error("[admin/accessories] GET failed:", e);
+    return NextResponse.json([]);
+  }
 }
 
-/**
- * POST: Add a new accessory item.
- */
 export async function POST(request: Request) {
   try {
     const user = getUserFromRequest(request);
     const body = await request.json();
-    const items = readAccessories();
+    const sb = getServiceSupabase();
 
-    const newItem: AccessoryItem = {
+    const row = {
       id: generateId(),
       name: body.name,
       description: body.description,
       category: body.category,
-      subcategory: body.subcategory || undefined,
+      subcategory: body.subcategory || null,
       price: body.price,
-      cost: body.cost != null ? body.cost : undefined,
+      cost: body.cost != null ? body.cost : null,
       quantity: body.quantity,
-      imageUrl: body.imageUrl || undefined,
-      brand: body.brand || undefined,
-      color: body.color || undefined,
-      game: body.game || undefined,
-      setName: body.setName || undefined,
-      dateAdded: new Date().toISOString().split("T")[0],
+      image_url: body.imageUrl || null,
+      brand: body.brand || null,
+      color: body.color || null,
+      game: body.game || null,
+      set_name: body.setName || null,
+      date_added: new Date().toISOString().split("T")[0],
       slug: generateSlug(body.name),
     };
 
-    items.push(newItem);
-    writeAccessories(items);
+    const { data, error } = await sb.from("accessories").insert(row).select().single();
+    if (error) throw error;
 
-    logActivity("accessory_added", user?.username || "unknown", `Added accessory "${body.name}"`, { itemId: newItem.id });
+    await logActivity("accessory_added", user?.username || "unknown", `Added accessory "${body.name}"`, { itemId: row.id });
 
-    return NextResponse.json({ success: true, item: newItem }, { status: 201 });
-  } catch {
+    return NextResponse.json({ success: true, item: data }, { status: 201 });
+  } catch (e) {
+    console.error("[admin/accessories] POST failed:", e);
     return NextResponse.json(
-      { success: false, error: "Invalid request body" },
+      { success: false, error: "Failed to add accessory" },
       { status: 400 }
     );
   }
 }
 
-/**
- * PUT: Update an existing accessory item by id.
- */
 export async function PUT(request: Request) {
   try {
     const user = getUserFromRequest(request);
@@ -97,61 +84,70 @@ export async function PUT(request: Request) {
       );
     }
 
-    const items = readAccessories();
-    const index = items.findIndex((item) => item.id === id);
+    const sb = getServiceSupabase();
 
-    if (index === -1) {
-      return NextResponse.json(
-        { success: false, error: "Item not found" },
-        { status: 404 }
-      );
-    }
+    const dbUpdates: Record<string, unknown> = {};
+    if (updates.name !== undefined) dbUpdates.name = updates.name;
+    if (updates.description !== undefined) dbUpdates.description = updates.description;
+    if (updates.category !== undefined) dbUpdates.category = updates.category;
+    if (updates.subcategory !== undefined) dbUpdates.subcategory = updates.subcategory;
+    if (updates.price !== undefined) dbUpdates.price = updates.price;
+    if (updates.cost !== undefined) dbUpdates.cost = updates.cost;
+    if (updates.quantity !== undefined) dbUpdates.quantity = updates.quantity;
+    if (updates.imageUrl !== undefined) dbUpdates.image_url = updates.imageUrl;
+    if (updates.brand !== undefined) dbUpdates.brand = updates.brand;
+    if (updates.color !== undefined) dbUpdates.color = updates.color;
+    if (updates.game !== undefined) dbUpdates.game = updates.game;
+    if (updates.setName !== undefined) dbUpdates.set_name = updates.setName;
 
-    const oldName = items[index].name;
-    items[index] = { ...items[index], ...updates, id };
-    writeAccessories(items);
+    const { data, error } = await sb
+      .from("accessories")
+      .update(dbUpdates)
+      .eq("id", id)
+      .select()
+      .single();
 
-    logActivity("accessory_updated", user?.username || "unknown", `Updated accessory "${oldName}"`, { itemId: id, changes: updates });
+    if (error) throw error;
 
-    return NextResponse.json({ success: true, item: items[index] });
-  } catch {
+    await logActivity("accessory_updated", user?.username || "unknown", `Updated accessory (${id})`, { itemId: id, changes: updates });
+
+    return NextResponse.json({ success: true, item: data });
+  } catch (e) {
+    console.error("[admin/accessories] PUT failed:", e);
     return NextResponse.json(
-      { success: false, error: "Invalid request body" },
+      { success: false, error: "Failed to update accessory" },
       { status: 400 }
     );
   }
 }
 
-/**
- * DELETE: Delete an accessory item by id (query param).
- */
 export async function DELETE(request: Request) {
-  const user = getUserFromRequest(request);
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get("id");
+  try {
+    const user = getUserFromRequest(request);
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
 
-  if (!id) {
+    if (!id) {
+      return NextResponse.json(
+        { success: false, error: "Item id is required as query parameter" },
+        { status: 400 }
+      );
+    }
+
+    const sb = getServiceSupabase();
+
+    const { data: item } = await sb.from("accessories").select("name").eq("id", id).single();
+    const { error } = await sb.from("accessories").delete().eq("id", id);
+    if (error) throw error;
+
+    await logActivity("accessory_deleted", user?.username || "unknown", `Deleted accessory "${item?.name || id}"`, { itemId: id });
+
+    return NextResponse.json({ success: true });
+  } catch (e) {
+    console.error("[admin/accessories] DELETE failed:", e);
     return NextResponse.json(
-      { success: false, error: "Item id is required as query parameter" },
+      { success: false, error: "Failed to delete accessory" },
       { status: 400 }
     );
   }
-
-  const items = readAccessories();
-  const index = items.findIndex((item) => item.id === id);
-
-  if (index === -1) {
-    return NextResponse.json(
-      { success: false, error: "Item not found" },
-      { status: 404 }
-    );
-  }
-
-  const deleted = items[index];
-  items.splice(index, 1);
-  writeAccessories(items);
-
-  logActivity("accessory_deleted", user?.username || "unknown", `Deleted accessory "${deleted.name}"`, { itemId: id });
-
-  return NextResponse.json({ success: true });
 }

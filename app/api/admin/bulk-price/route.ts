@@ -1,26 +1,9 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
-import type { InventoryItem } from "@/lib/types";
 import { getUserFromRequest } from "@/lib/auth";
 import { logActivity } from "@/lib/activity-log";
-
-const INVENTORY_FILE = path.join(process.cwd(), "data", "inventory.json");
+import { getServiceSupabase } from "@/lib/supabase";
 
 const YGOPRODECK_API = "https://db.ygoprodeck.com/api/v7/cardinfo.php";
-
-function readInventory(): InventoryItem[] {
-  try {
-    const raw = fs.readFileSync(INVENTORY_FILE, "utf-8");
-    return JSON.parse(raw) as InventoryItem[];
-  } catch {
-    return [];
-  }
-}
-
-function writeInventory(items: InventoryItem[]): void {
-  fs.writeFileSync(INVENTORY_FILE, JSON.stringify(items, null, 2), "utf-8");
-}
 
 interface BulkPriceRequest {
   action: "preview" | "apply";
@@ -118,19 +101,21 @@ export async function POST(request: Request) {
       );
     }
 
-    const items = readInventory();
+    const sb = getServiceSupabase();
 
-    // Filter items by game if specified
-    let targetItems = game ? items.filter((item) => item.game === game) : [...items];
+    // Fetch inventory from Supabase
+    let query = sb.from("inventory").select("*");
+    if (game) query = query.eq("game", game);
+    if (selectedIds && selectedIds.length > 0) query = query.in("id", selectedIds);
 
-    // Filter by selected IDs if applying to selected only
-    if (selectedIds && selectedIds.length > 0) {
-      targetItems = targetItems.filter((item) => selectedIds.includes(item.id));
-    }
+    const { data: items, error: fetchError } = await query;
+    if (fetchError) throw fetchError;
+
+    const allFetchedItems = items || [];
 
     // Only Yu-Gi-Oh cards can get live market prices
-    const yugiohItems = targetItems.filter((item) => item.game === "yugioh");
-    const otherItems = targetItems.filter((item) => item.game !== "yugioh");
+    const yugiohItems = allFetchedItems.filter((item) => item.game === "yugioh");
+    const otherItems = allFetchedItems.filter((item) => item.game !== "yugioh");
 
     // Fetch market prices for Yu-Gi-Oh cards (batch with concurrency limit)
     const BATCH_SIZE = 10;
@@ -140,7 +125,7 @@ export async function POST(request: Request) {
       const batch = yugiohItems.slice(i, i + BATCH_SIZE);
       const results = await Promise.all(
         batch.map(async (item) => {
-          const marketPrice = await fetchMarketPrice(item.cardName);
+          const marketPrice = await fetchMarketPrice(item.card_name);
           return { item, marketPrice };
         })
       );
@@ -164,8 +149,8 @@ export async function POST(request: Request) {
 
         priceChanges.push({
           id: item.id,
-          cardName: item.cardName,
-          setCode: item.setCode,
+          cardName: item.card_name,
+          setCode: item.set_code,
           game: item.game,
           currentPrice: item.price,
           marketPrice,
@@ -194,8 +179,8 @@ export async function POST(request: Request) {
 
       priceChanges.push({
         id: item.id,
-        cardName: item.cardName,
-        setCode: item.setCode,
+        cardName: item.card_name,
+        setCode: item.set_code,
         game: item.game,
         currentPrice: item.price,
         marketPrice: item.price,
@@ -225,27 +210,26 @@ export async function POST(request: Request) {
       });
     }
 
-    // action === "apply"
-    const allItems = readInventory();
+    // action === "apply" — update prices in Supabase
     let updatedCount = 0;
 
     for (const change of priceChanges) {
-      const idx = allItems.findIndex((item) => item.id === change.id);
-      if (idx !== -1 && change.newPrice !== change.currentPrice) {
-        allItems[idx].price = change.newPrice;
-        updatedCount++;
+      if (change.newPrice !== change.currentPrice) {
+        const { error } = await sb
+          .from("inventory")
+          .update({ price: change.newPrice })
+          .eq("id", change.id);
+        if (!error) updatedCount++;
       }
     }
-
-    writeInventory(allItems);
 
     const avgChangePercent =
       priceChanges.length > 0
         ? priceChanges.reduce((sum, c) => sum + c.changePercent, 0) / priceChanges.length
         : 0;
 
-    logActivity(
-      "card_updated" as any,
+    await logActivity(
+      "card_updated" as Parameters<typeof logActivity>[0],
       user?.username || "unknown",
       `Bulk price update: ${updatedCount} cards updated (${direction === "below" ? "-" : "+"}${rule === "percentage" ? value + "%" : "$" + value} ${direction} market, min $${minPrice}, max ${maxDiscount}% discount)`,
       {

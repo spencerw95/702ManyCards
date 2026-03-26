@@ -1,49 +1,22 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
 import { randomBytes } from "crypto";
-import type { InventoryItem, CardCondition, CardEdition, TCGGame } from "@/lib/types";
+import type { CardCondition, CardEdition, TCGGame } from "@/lib/types";
 import { CONDITION_SHORT } from "@/lib/types";
 import { getUserFromRequest } from "@/lib/auth";
 import { logActivity } from "@/lib/activity-log";
+import { getServiceSupabase } from "@/lib/supabase";
 
-const INVENTORY_FILE = path.join(process.cwd(), "data", "inventory.json");
-
-function readInventory(): InventoryItem[] {
-  try {
-    const raw = fs.readFileSync(INVENTORY_FILE, "utf-8");
-    return JSON.parse(raw) as InventoryItem[];
-  } catch {
-    return [];
-  }
-}
-
-function writeInventory(items: InventoryItem[]): void {
-  fs.writeFileSync(INVENTORY_FILE, JSON.stringify(items, null, 2), "utf-8");
-}
-
-function generateId(
-  setCode: string,
-  condition: CardCondition,
-  edition: CardEdition
-): string {
+function generateId(setCode: string, condition: CardCondition, edition: CardEdition): string {
   const condShort = CONDITION_SHORT[condition] || "UNK";
-  const edShort =
-    edition === "1st Edition" ? "1st" : edition === "Unlimited" ? "Unl" : "Ltd";
+  const edShort = edition === "1st Edition" ? "1st" : edition === "Unlimited" ? "Unl" : "Ltd";
   const rand = randomBytes(2).toString("hex");
   return `${setCode}-${condShort}-${edShort}-${rand}`;
 }
 
 function generateSlug(cardName: string): string {
-  return cardName
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
+  return cardName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
-/**
- * Parse a CSV line, handling quoted fields that may contain commas.
- */
 function parseCsvLine(line: string): string[] {
   const fields: string[] = [];
   let current = "";
@@ -51,13 +24,11 @@ function parseCsvLine(line: string): string[] {
 
   for (let i = 0; i < line.length; i++) {
     const char = line[i];
-
     if (inQuotes) {
       if (char === '"') {
-        // Check for escaped quote ""
         if (i + 1 < line.length && line[i + 1] === '"') {
           current += '"';
-          i++; // skip next quote
+          i++;
         } else {
           inQuotes = false;
         }
@@ -75,14 +46,10 @@ function parseCsvLine(line: string): string[] {
       }
     }
   }
-
   fields.push(current.trim());
   return fields;
 }
 
-/**
- * POST: Upload and process a CSV file.
- */
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
@@ -90,57 +57,28 @@ export async function POST(request: Request) {
     const mode = (formData.get("mode") as string) || "replace";
 
     if (!file) {
-      return NextResponse.json(
-        { success: false, error: "No CSV file provided" },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: "No CSV file provided" }, { status: 400 });
     }
-
     if (mode !== "replace" && mode !== "merge") {
-      return NextResponse.json(
-        { success: false, error: "Mode must be 'replace' or 'merge'" },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: "Mode must be 'replace' or 'merge'" }, { status: 400 });
     }
 
     const text = await file.text();
     const lines = text.split(/\r?\n/).filter((line) => line.trim() !== "");
 
     if (lines.length < 2) {
-      return NextResponse.json(
-        { success: false, error: "CSV must have a header row and at least one data row" },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: "CSV must have a header row and at least one data row" }, { status: 400 });
     }
 
-    // Parse header
     const headers = parseCsvLine(lines[0]).map((h) => h.toLowerCase().trim());
-
-    // Expected columns
-    const expectedColumns = [
-      "cardname",
-      "setcode",
-      "setname",
-      "rarity",
-      "edition",
-      "condition",
-      "price",
-      "quantity",
-      "language",
-      "game",
-      "imageurl",
-    ];
-
-    // Map header indices
+    const expectedColumns = ["cardname", "setcode", "setname", "rarity", "edition", "condition", "price", "quantity", "language", "game", "imageurl"];
     const colIndex: Record<string, number> = {};
     for (const col of expectedColumns) {
-      const idx = headers.indexOf(col);
-      colIndex[col] = idx;
+      colIndex[col] = headers.indexOf(col);
     }
 
-    // Parse data rows
     const today = new Date().toISOString().split("T")[0];
-    const parsedItems: InventoryItem[] = [];
+    const rows: Record<string, unknown>[] = [];
 
     for (let i = 1; i < lines.length; i++) {
       const fields = parseCsvLine(lines[i]);
@@ -157,73 +95,59 @@ export async function POST(request: Request) {
       const game = (colIndex.game >= 0 ? fields[colIndex.game] : "yugioh") as TCGGame;
       const imageUrl = colIndex.imageurl >= 0 ? fields[colIndex.imageurl] : "";
 
-      if (!cardName) continue; // skip empty rows
+      if (!cardName) continue;
 
-      const item: InventoryItem = {
+      rows.push({
         id: generateId(setCode, condition, edition),
-        cardName,
-        setCode,
-        setName,
+        card_name: cardName,
+        set_code: setCode,
+        set_name: setName,
         rarity,
         edition,
         condition,
         price,
         quantity,
         language: language || "English",
-        dateAdded: today,
+        date_added: today,
         game,
         slug: generateSlug(cardName),
-        imageUrl: imageUrl || undefined,
-      };
-
-      parsedItems.push(item);
+        image_url: imageUrl || null,
+      });
     }
 
+    const sb = getServiceSupabase();
     let added = 0;
-    let updated = 0;
+    const updated = 0;
 
     if (mode === "replace") {
-      writeInventory(parsedItems);
-      added = parsedItems.length;
-    } else {
-      // Merge mode: update existing by id, add new items
-      const existing = readInventory();
-      const existingMap = new Map(existing.map((item) => [item.id, item]));
-
-      for (const item of parsedItems) {
-        if (existingMap.has(item.id)) {
-          existingMap.set(item.id, { ...existingMap.get(item.id)!, ...item });
-          updated++;
-        } else {
-          existingMap.set(item.id, item);
-          added++;
-        }
+      // Delete all existing inventory, then insert new
+      await sb.from("inventory").delete().neq("id", "");
+      if (rows.length > 0) {
+        const { error } = await sb.from("inventory").insert(rows);
+        if (error) throw error;
       }
-
-      writeInventory(Array.from(existingMap.values()));
+      added = rows.length;
+    } else {
+      // Merge mode: upsert
+      if (rows.length > 0) {
+        const { error } = await sb.from("inventory").upsert(rows, { onConflict: "id" });
+        if (error) throw error;
+      }
+      added = rows.length;
     }
 
-    const total = readInventory().length;
+    // Get total count
+    const { count } = await sb.from("inventory").select("*", { count: "exact", head: true });
+    const total = count || 0;
 
     const user = getUserFromRequest(request);
-    logActivity("csv_uploaded", user?.username || "unknown", `CSV upload (${mode}): ${added} added, ${updated} updated, ${total} total`, {
-      mode,
-      added,
-      updated,
-      total,
+    await logActivity("csv_uploaded", user?.username || "unknown", `CSV upload (${mode}): ${added} added, ${updated} updated, ${total} total`, {
+      mode, added, updated, total,
     });
 
-    return NextResponse.json({
-      success: true,
-      added,
-      updated,
-      total,
-    });
+    return NextResponse.json({ success: true, added, updated, total });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to process CSV";
-    return NextResponse.json(
-      { success: false, error: message },
-      { status: 400 }
-    );
+    return NextResponse.json({ success: false, error: message }, { status: 400 });
   }
 }

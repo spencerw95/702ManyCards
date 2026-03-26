@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
+import AdminErrorBoundary from "@/components/admin/ErrorBoundary";
 import type { AdminRole } from "@/lib/auth";
 
 interface AuthUser {
@@ -322,7 +323,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         {/* Page content */}
         <main className="flex-1 overflow-y-auto p-4 lg:p-6">
-          {children}
+          <AdminErrorBoundary>
+            {children}
+          </AdminErrorBoundary>
         </main>
       </div>
     </div>

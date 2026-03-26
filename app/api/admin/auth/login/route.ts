@@ -24,11 +24,7 @@ export async function POST(request: Request) {
 
     const token = createToken(user.username, user.role);
 
-    try {
-      logActivity("login", user.username, `${user.username} logged in (${user.role})`);
-    } catch {
-      // Activity logging may fail on read-only filesystems (e.g., Vercel)
-    }
+    await logActivity("login", user.username, `${user.username} logged in (${user.role})`);
 
     const response = NextResponse.json({
       success: true,
@@ -37,7 +33,7 @@ export async function POST(request: Request) {
     response.cookies.set(COOKIE_NAME, token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: "strict",
       path: "/",
       maxAge: 60 * 60 * 24, // 24 hours
     });

@@ -1,9 +1,4 @@
-import fs from "fs";
-import path from "path";
-import { randomBytes } from "crypto";
-
-const LOG_FILE = path.join(process.cwd(), "data", "activity-log.json");
-const MAX_LOG_ENTRIES = 500; // Keep last 500 entries
+import { getServiceSupabase } from "./supabase";
 
 export type ActivityAction =
   | "login"
@@ -28,69 +23,115 @@ export interface ActivityEntry {
   timestamp: string;
 }
 
-function readLog(): ActivityEntry[] {
-  try {
-    const raw = fs.readFileSync(LOG_FILE, "utf-8");
-    return JSON.parse(raw) as ActivityEntry[];
-  } catch {
-    return [];
-  }
-}
-
-function writeLog(entries: ActivityEntry[]): void {
-  // Keep only the most recent entries
-  const trimmed = entries.slice(-MAX_LOG_ENTRIES);
-  fs.writeFileSync(LOG_FILE, JSON.stringify(trimmed, null, 2), "utf-8");
-}
-
 /**
- * Log an admin activity.
+ * Log an admin activity to Supabase.
  */
-export function logActivity(
+export async function logActivity(
   action: ActivityAction,
   username: string,
   details: string,
   metadata?: Record<string, unknown>
-): ActivityEntry {
-  const entry: ActivityEntry = {
-    id: randomBytes(4).toString("hex"),
-    action,
-    username,
-    details,
-    metadata,
-    timestamp: new Date().toISOString(),
-  };
+): Promise<ActivityEntry | null> {
+  try {
+    const sb = getServiceSupabase();
+    const entry = {
+      action,
+      username,
+      details,
+      metadata: metadata || {},
+      timestamp: new Date().toISOString(),
+    };
 
-  const log = readLog();
-  log.push(entry);
-  writeLog(log);
+    const { data, error } = await sb
+      .from("activity_log")
+      .insert(entry)
+      .select()
+      .single();
 
-  return entry;
+    if (error) {
+      console.error("[activity-log] Failed to log activity:", error.message);
+      return null;
+    }
+
+    return {
+      id: data.id,
+      action: data.action,
+      username: data.username,
+      details: data.details,
+      metadata: data.metadata,
+      timestamp: data.timestamp,
+    };
+  } catch (e) {
+    console.error("[activity-log] Error logging activity:", e);
+    return null;
+  }
 }
 
 /**
- * Get recent activity log entries.
+ * Get recent activity log entries from Supabase.
  */
-export function getActivityLog(limit = 50, offset = 0): {
+export async function getActivityLog(limit = 50, offset = 0): Promise<{
   entries: ActivityEntry[];
   total: number;
-} {
-  const log = readLog();
-  // Return newest first
-  const reversed = [...log].reverse();
-  return {
-    entries: reversed.slice(offset, offset + limit),
-    total: log.length,
-  };
+}> {
+  try {
+    const sb = getServiceSupabase();
+
+    // Get total count
+    const { count } = await sb
+      .from("activity_log")
+      .select("*", { count: "exact", head: true });
+
+    // Get paginated entries (newest first)
+    const { data, error } = await sb
+      .from("activity_log")
+      .select("*")
+      .order("timestamp", { ascending: false })
+      .range(offset, offset + limit - 1);
+
+    if (error) throw error;
+
+    const entries: ActivityEntry[] = (data || []).map((row: Record<string, unknown>) => ({
+      id: String(row.id),
+      action: row.action as ActivityAction,
+      username: row.username as string,
+      details: row.details as string,
+      metadata: (row.metadata as Record<string, unknown>) || undefined,
+      timestamp: row.timestamp as string,
+    }));
+
+    return { entries, total: count || 0 };
+  } catch (e) {
+    console.error("[activity-log] Failed to fetch activity log:", e);
+    return { entries: [], total: 0 };
+  }
 }
 
 /**
  * Get activity log for a specific user.
  */
-export function getActivityByUser(username: string, limit = 50): ActivityEntry[] {
-  const log = readLog();
-  return log
-    .filter((entry) => entry.username === username)
-    .reverse()
-    .slice(0, limit);
+export async function getActivityByUser(username: string, limit = 50): Promise<ActivityEntry[]> {
+  try {
+    const sb = getServiceSupabase();
+    const { data, error } = await sb
+      .from("activity_log")
+      .select("*")
+      .eq("username", username)
+      .order("timestamp", { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+
+    return (data || []).map((row: Record<string, unknown>) => ({
+      id: String(row.id),
+      action: row.action as ActivityAction,
+      username: row.username as string,
+      details: row.details as string,
+      metadata: (row.metadata as Record<string, unknown>) || undefined,
+      timestamp: row.timestamp as string,
+    }));
+  } catch (e) {
+    console.error("[activity-log] Failed to fetch user activity:", e);
+    return [];
+  }
 }

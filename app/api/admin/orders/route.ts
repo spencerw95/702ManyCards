@@ -12,22 +12,15 @@ const VALID_STATUSES: OrderStatus[] = [
   "cancelled",
 ];
 
-/**
- * GET: Return all orders.
- */
 export async function GET() {
-  const orders = getAllOrders();
+  const orders = await getAllOrders();
   return NextResponse.json(orders);
 }
 
-/**
- * POST: Create a new order.
- */
 export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    // Validate required fields
     if (!body.items || !Array.isArray(body.items) || body.items.length === 0) {
       return NextResponse.json(
         { success: false, error: "Order must have at least one item" },
@@ -42,7 +35,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const order = createOrder({
+    const order = await createOrder({
       items: body.items,
       customer: body.customer,
       subtotal: body.subtotal ?? 0,
@@ -53,7 +46,7 @@ export async function POST(request: Request) {
       notes: body.notes,
     });
 
-    logActivity("order_created", "customer", `New order from ${body.customer.name} ($${order.total.toFixed(2)})`, {
+    await logActivity("order_created", "customer", `New order from ${body.customer.name} ($${order.total.toFixed(2)})`, {
       orderId: order.id,
       customerEmail: body.customer.email,
       total: order.total,
@@ -69,9 +62,6 @@ export async function POST(request: Request) {
   }
 }
 
-/**
- * PUT: Update order status.
- */
 export async function PUT(request: Request) {
   try {
     const user = getUserFromRequest(request);
@@ -92,9 +82,9 @@ export async function PUT(request: Request) {
       );
     }
 
-    const order = updateOrderStatus(id, status);
+    const order = await updateOrderStatus(id, status);
 
-    logActivity("order_status_updated", user?.username || "unknown", `Updated order ${id} status to "${status}"`, {
+    await logActivity("order_status_updated", user?.username || "unknown", `Updated order ${id} status to "${status}"`, {
       orderId: id,
       newStatus: status,
     });
@@ -102,10 +92,10 @@ export async function PUT(request: Request) {
     return NextResponse.json({ success: true, order });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Invalid request body";
-    const status = message.includes("not found") ? 404 : 400;
+    const statusCode = message.includes("not found") ? 404 : 400;
     return NextResponse.json(
       { success: false, error: message },
-      { status }
+      { status: statusCode }
     );
   }
 }
