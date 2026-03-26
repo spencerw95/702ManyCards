@@ -47,7 +47,7 @@ export default function AboutPage() {
                 </span>
                 <h3 className="font-semibold text-base">{grade.label}</h3>
               </div>
-              <p className="text-sm text-[var(--color-text-secondary)] ml-15 pl-[60px]">
+              <p className="text-sm text-[var(--color-text-secondary)] pl-[60px]">
                 {grade.description}
               </p>
             </div>

@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import Link from "next/link";
 
 interface FAQItem {
   question: string;
-  answer: React.ReactNode;
+  answer: ReactNode;
 }
 
 const FAQ_ITEMS: FAQItem[] = [

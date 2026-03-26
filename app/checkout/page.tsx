@@ -92,6 +92,13 @@ export default function CheckoutPage() {
     setSubmitting(true);
     setSubmitError(null);
 
+    const currentDiscount =
+      coupon && subtotal > 0
+        ? coupon.type === "percentage"
+          ? subtotal * (coupon.value / 100)
+          : Math.min(coupon.value, subtotal)
+        : 0;
+
     try {
       const res = await fetch("/api/admin/orders", {
         method: "POST",
@@ -122,8 +129,8 @@ export default function CheckoutPage() {
           },
           subtotal,
           shipping,
-          discount,
-          total: total - discount,
+          discount: currentDiscount,
+          total: total - currentDiscount,
           status: "pending",
           notes: form.notes || undefined,
         }),

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 type ReviewStatus = "pending" | "approved" | "rejected";
 
@@ -190,9 +190,8 @@ export default function ReviewsPage() {
             </thead>
             <tbody className="divide-y divide-[var(--color-border)]">
               {sorted.map((review) => (
-                <>
+                <React.Fragment key={review.id}>
                   <tr
-                    key={review.id}
                     className="hover:bg-[var(--color-bg-secondary)] transition-colors cursor-pointer"
                     onClick={() =>
                       setExpandedId(expandedId === review.id ? null : review.id)
@@ -237,7 +236,7 @@ export default function ReviewsPage() {
 
                   {/* Expanded Details */}
                   {expandedId === review.id && (
-                    <tr key={`${review.id}-detail`}>
+                    <tr>
                       <td colSpan={7} className="px-4 py-4 bg-[var(--color-bg-secondary)]">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                           {/* Left: Review Content */}
@@ -356,7 +355,7 @@ export default function ReviewsPage() {
                       </td>
                     </tr>
                   )}
-                </>
+                </React.Fragment>
               ))}
               {sorted.length === 0 && (
                 <tr>
