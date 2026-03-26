@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAllOrders } from "@/lib/orders";
+import { getUserFromRequest } from "@/lib/auth";
 import type { Order, OrderItem } from "@/lib/types";
 
 interface DailyRevenue {
@@ -78,6 +79,11 @@ function guessGameFromItem(item: OrderItem): string {
  * Query params: ?days=30 (default 30)
  */
 export async function GET(request: NextRequest) {
+  const user = getUserFromRequest(request);
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const searchParams = request.nextUrl.searchParams;
   const days = parseInt(searchParams.get("days") || "30", 10);
 

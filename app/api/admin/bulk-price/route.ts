@@ -28,11 +28,28 @@ interface PriceChange {
   changePercent: number;
 }
 
+async function fetchWithRetry(url: string, maxRetries = 3): Promise<Response> {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const res = await fetch(url, { next: { revalidate: 3600 } });
+      if (res.ok) return res;
+      if (res.status >= 500 && attempt < maxRetries - 1) {
+        await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
+        continue;
+      }
+      return res;
+    } catch (e) {
+      if (attempt === maxRetries - 1) throw e;
+      await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
+    }
+  }
+  throw new Error("Max retries exceeded");
+}
+
 async function fetchMarketPrice(cardName: string): Promise<number | null> {
   try {
-    const res = await fetch(
-      `${YGOPRODECK_API}?name=${encodeURIComponent(cardName)}`,
-      { next: { revalidate: 3600 } }
+    const res = await fetchWithRetry(
+      `${YGOPRODECK_API}?name=${encodeURIComponent(cardName)}`
     );
     if (!res.ok) return null;
     const data = await res.json();
@@ -90,6 +107,9 @@ function calculateNewPrice(
 export async function POST(request: Request) {
   try {
     const user = getUserFromRequest(request);
+    if (!user) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
     const body: BulkPriceRequest = await request.json();
 
     const { action, rule, value, direction, minPrice, maxDiscount, game, selectedIds } = body;
@@ -230,7 +250,7 @@ export async function POST(request: Request) {
 
     await logActivity(
       "card_updated" as Parameters<typeof logActivity>[0],
-      user?.username || "unknown",
+      user.username,
       `Bulk price update: ${updatedCount} cards updated (${direction === "below" ? "-" : "+"}${rule === "percentage" ? value + "%" : "$" + value} ${direction} market, min $${minPrice}, max ${maxDiscount}% discount)`,
       {
         updatedCount,

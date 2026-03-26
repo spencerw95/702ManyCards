@@ -1,4 +1,4 @@
-import { createHmac } from "crypto";
+import { createHmac, createHash } from "crypto";
 
 export const COOKIE_NAME = "702mc_admin_session";
 const TOKEN_MAX_AGE_MS = 24 * 60 * 60 * 1000; // 24 hours
@@ -11,6 +11,10 @@ export interface AdminUser {
   role: AdminRole;
   createdAt?: string;
   displayName?: string;
+}
+
+export function hashPassword(password: string): string {
+  return createHash("sha256").update(password).digest("hex");
 }
 
 function getSecret(): string {
@@ -73,7 +77,7 @@ export async function addTeamMember(username: string, password: string, role: Ad
     const { error } = await supabase.from("team").insert({
       id: crypto.randomUUID(),
       username,
-      password_hash: password,
+      password_hash: hashPassword(password),
       display_name: displayName || username,
       role,
       created_at: new Date().toISOString(),
@@ -109,7 +113,7 @@ export async function updateTeamMember(username: string, updates: { password?: s
     if (!supabase) return false;
 
     const updateData: Record<string, string> = {};
-    if (updates.password) updateData.password_hash = updates.password;
+    if (updates.password) updateData.password_hash = hashPassword(updates.password);
     if (updates.role) updateData.role = updates.role;
     if (updates.displayName) updateData.display_name = updates.displayName;
 
@@ -126,7 +130,8 @@ export async function updateTeamMember(username: string, updates: { password?: s
 export async function validateCredentials(username: string, password: string): Promise<AdminUser | null> {
   const users = await getAdminUsers();
   // Case-insensitive username match, exact password match
-  return users.find((u) => u.username.toLowerCase() === username.toLowerCase() && u.password === password) || null;
+  const hashed = hashPassword(password);
+  return users.find((u) => u.username.toLowerCase() === username.toLowerCase() && u.password === hashed) || null;
 }
 
 /**

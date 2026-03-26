@@ -51,6 +51,11 @@ function parseCsvLine(line: string): string[] {
 }
 
 export async function POST(request: Request) {
+  const user = getUserFromRequest(request);
+  if (!user) {
+    return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
@@ -140,8 +145,7 @@ export async function POST(request: Request) {
     const { count } = await sb.from("inventory").select("*", { count: "exact", head: true });
     const total = count || 0;
 
-    const user = getUserFromRequest(request);
-    await logActivity("csv_uploaded", user?.username || "unknown", `CSV upload (${mode}): ${added} added, ${updated} updated, ${total} total`, {
+    await logActivity("csv_uploaded", user.username, `CSV upload (${mode}): ${added} added, ${updated} updated, ${total} total`, {
       mode, added, updated, total,
     });
 
