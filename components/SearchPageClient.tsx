@@ -192,6 +192,18 @@ export default function SearchPageClient({
     priceMax: null,
     game: gameParam || undefined,
   });
+  // Sync game filter when URL search params change (e.g. header nav links)
+  useEffect(() => {
+    const newGame = searchParams.get("game") as TCGGame | null;
+    setFilters((prev) => {
+      const currentGame = prev.game || null;
+      if (newGame !== currentGame) {
+        return { ...prev, game: newGame || undefined, rarity: [], setName: "" };
+      }
+      return prev;
+    });
+  }, [searchParams]);
+
   const [sort, setSort] = useState<SortOption>("name-asc");
   const [results, setResults] = useState<InventoryItem[]>(initialItems);
   const [displayCards, setDisplayCards] = useState<InventoryItem[]>(() => getUniqueCards(sortItems(initialItems, "name-asc")));
