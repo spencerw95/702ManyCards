@@ -1,15 +1,15 @@
 import { NextResponse } from "next/server";
 import { getOrderById } from "@/lib/orders";
-import { getUserFromRequest } from "@/lib/auth";
+import { getUserFromCookies } from "@/lib/auth";
 
 /**
  * GET: Return a single order by ID.
  */
 export async function GET(
-  request: Request,
+  _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const user = getUserFromRequest(request);
+  const user = await getUserFromCookies();
   if (!user) {
     return NextResponse.json(
       { success: false, error: "Unauthorized" },

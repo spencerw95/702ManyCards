@@ -97,7 +97,7 @@ export async function POST(request: Request) {
       price: body.price,
     });
 
-    return NextResponse.json({ success: true, item: data }, { status: 201 });
+    return NextResponse.json({ success: true, item: mapRow(data) }, { status: 201 });
   } catch (e) {
     console.error("[admin/inventory] POST failed:", e);
     return NextResponse.json(
@@ -150,7 +150,7 @@ export async function PUT(request: Request) {
       changes: updates,
     });
 
-    return NextResponse.json({ success: true, item: data });
+    return NextResponse.json({ success: true, item: mapRow(data) });
   } catch (e) {
     console.error("[admin/inventory] PUT failed:", e);
     return NextResponse.json(

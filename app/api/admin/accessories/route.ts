@@ -82,7 +82,7 @@ export async function POST(request: Request) {
 
     await logActivity("accessory_added", user?.username || "unknown", `Added accessory "${body.name}"`, { itemId: row.id });
 
-    return NextResponse.json({ success: true, item: data }, { status: 201 });
+    return NextResponse.json({ success: true, item: mapRow(data) }, { status: 201 });
   } catch (e) {
     console.error("[admin/accessories] POST failed:", e);
     return NextResponse.json(
@@ -132,7 +132,7 @@ export async function PUT(request: Request) {
 
     await logActivity("accessory_updated", user?.username || "unknown", `Updated accessory (${id})`, { itemId: id, changes: updates });
 
-    return NextResponse.json({ success: true, item: data });
+    return NextResponse.json({ success: true, item: mapRow(data) });
   } catch (e) {
     console.error("[admin/accessories] PUT failed:", e);
     return NextResponse.json(
